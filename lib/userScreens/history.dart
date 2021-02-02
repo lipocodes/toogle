@@ -4,6 +4,7 @@ import 'package:Toogle/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:Toogle/tools/app_tools.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ShopHistory extends StatefulWidget {
   @override
@@ -26,11 +27,12 @@ class _ShopHistoryState extends State<ShopHistory> {
   List<String> paymentMethods = [];
   List<String> dateOrders = [];
   ScrollController _scrollController = new ScrollController();
+  SharedPreferences prefs;
 
   retrieveShopsOrders() async {
-    //displayProgressDialog(context);
-    //retrieve the list of this user's orders & the shops where he has purchased from
-    this.shopsOrders = await appMethod.retrieveShopsOrders();
+    prefs = await SharedPreferences.getInstance();
+    String clientPhone = prefs.getString("clientPhone");
+    this.shopsOrders = await appMethod.retrieveShopsOrders(clientPhone);
 
     int len = this.shopsOrders == null ? 0 : this.shopsOrders.length;
 

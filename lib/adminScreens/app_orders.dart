@@ -66,9 +66,9 @@ class _AppOrdersState extends State<AppOrders> {
 
       listClientDetails = await appMethod.retrieveClientDetails(clientId);
 
-      String temp1 = listClientDetails[4]
+      String temp1 = listClientDetails[3]
           .substring(1)
-          .substring(0, listClientDetails[4].length - 2);
+          .substring(0, listClientDetails[3].length - 2);
 
       List<String> temp2 = temp1.split(",");
 
@@ -93,9 +93,9 @@ class _AppOrdersState extends State<AppOrders> {
       //retrieve this client's details from DB
       listClientDetails = await appMethod.retrieveClientDetails(clientId);
 
-      String temp1 = listClientDetails[4]
+      String temp1 = listClientDetails[3]
           .substring(1)
-          .substring(0, listClientDetails[4].length - 2);
+          .substring(0, listClientDetails[3].length - 2);
 
       List<String> temp2 = temp1.split(",");
       List<String> temp3 = temp2[i].split("^^^");
@@ -144,8 +144,9 @@ class _AppOrdersState extends State<AppOrders> {
   void changedDropDownOrderStatus(r, index) async {
     List<String> t = this.listAllClients[index];
 
-    String shopOrder = t[4];
-    this.clientId = t[5];
+    this.clientId = t[2];
+    String shopOrder = t[3];
+
     List<String> temp = shopOrder.split("^^^");
 
     List<String> newList = [];
@@ -161,6 +162,7 @@ class _AppOrdersState extends State<AppOrders> {
       r = "נשלח ללקוח";
     else
       r = "בוטל";
+
     await appMethod.updateUserOrders(
         newList, this.clientId, r, this.orderID[index]);
 
@@ -416,20 +418,7 @@ class _AppOrdersState extends State<AppOrders> {
                       SizedBox(
                         height: 10.0,
                       ),
-                      Row(
-                        children: [
-                          Icon(Icons.home),
-                          Text(
-                            this.listAllClients[index][3],
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w400),
-                          ),
-                        ],
-                      ),
                     ],
-                  ),
-                  SizedBox(
-                    height: 30,
                   ),
                   for (int i = 0; i < listAllOrders[index].length; i++) ...[
                     Row(

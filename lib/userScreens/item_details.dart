@@ -130,14 +130,6 @@ class _ItemDetailState extends State<ItemDetail> {
   }
 
   void orderNow() async {
-    String acctUserID = await getStringDataLocally(key: userID);
-    if (acctUserID == 'gcBXhffMjEQRANQ5YzVzmmndkfn1') {
-      //showSnackBar("נא לצאת מחשבון האורח ולהיכנס לחשבון שלך", scaffoldKey);
-      String response = await Navigator.of(context).push(new CupertinoPageRoute(
-          builder: (BuildContext context) => new ShopLogin()));
-      return;
-    }
-
     await Navigator.of(context).push(new CupertinoPageRoute(
         builder: (BuildContext context) => new ShopCart(
             itemId: widget.itemId,
@@ -448,14 +440,6 @@ class _ItemDetailState extends State<ItemDetail> {
           children: <Widget>[
             new FloatingActionButton(
               onPressed: () async {
-                String acctUserID = await getStringDataLocally(key: userID);
-                if (acctUserID == 'gcBXhffMjEQRANQ5YzVzmmndkfn1') {
-                  String response = await Navigator.of(context).push(
-                      new CupertinoPageRoute(
-                          builder: (BuildContext context) => new ShopLogin()));
-                  return;
-                }
-
                 Navigator.of(context).push(new CupertinoPageRoute(
                     builder: (BuildContext context) => new ShopCart()));
                 //retrievePrefs();

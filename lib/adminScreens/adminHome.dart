@@ -111,30 +111,6 @@ class _AdminHomeState extends State<AdminHome> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                GestureDetector(
-                  onTap: () async {
-                    //print("blad");
-                    var temp = await firebaseMethods.retrieveVisitorListShop();
-                    List<String> listVisitors = [];
-                    for (int x = 0; x < temp.length; x++) {
-                      listVisitors.add(temp[x].toString());
-                    }
-                    _sendSMS("", listVisitors);
-                  },
-                  child: new CircleAvatar(
-                    maxRadius: 70.0,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        new Icon(Icons.chat),
-                        new SizedBox(
-                          height: 10.0,
-                        ),
-                        new Text("מסרים"),
-                      ],
-                    ),
-                  ),
-                ),
                 Padding(
                   padding: const EdgeInsets.only(right: 20.0),
                   child: new Row(

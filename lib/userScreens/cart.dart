@@ -65,6 +65,9 @@ class _ShopCartState extends State<ShopCart> {
   String visitedShopID = "";
   String creditCards = "";
   String paypal = "";
+  final controllerName = TextEditingController();
+  final controllerLocation = TextEditingController();
+  final controllerPhone = TextEditingController();
 
   //pull what is in the shopping cart (preference) into a list
   void retrieveCartContents() async {
@@ -183,15 +186,35 @@ class _ShopCartState extends State<ShopCart> {
         context: context,
         builder: (_) => new AlertDialog(
               //title: new Text("Choose Payment Method"),
-              content: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  new Text(
-                    ":אופן התשלום",
-                    style:
-                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
-                  ),
-                ],
+              content: Container(
+                height: 180,
+                child: Column(
+                  children: [
+                    Text("שם מלא"),
+                    TextField(
+                      textDirection: TextDirection.rtl,
+                      onChanged: (value) {},
+                      controller: controllerName,
+                      // decoration: InputDecoration(hintText: "שם מלא"),
+                    ),
+                    SizedBox(height: 20),
+                    Text("מיקום"),
+                    TextField(
+                      textDirection: TextDirection.rtl,
+                      onChanged: (value) {},
+                      controller: controllerLocation,
+                      //decoration: InputDecoration(hintText: "מיקום"),
+                    ),
+                    SizedBox(height: 20),
+                    Text("מספר טלפון"),
+                    TextField(
+                      textDirection: TextDirection.rtl,
+                      onChanged: (value) {},
+                      controller: controllerPhone,
+                      //decoration: InputDecoration(hintText: "מספר טלפון"),
+                    ),
+                  ],
+                ),
               ),
               actions: <Widget>[
                 Padding(
@@ -204,15 +227,20 @@ class _ShopCartState extends State<ShopCart> {
                             "טלפון",
                             style: TextStyle(fontSize: 24)),
                         onPressed: () async {
-                          isLoggedIn = await getBoolDataLocally(key: loggedIn);
-                          if (isLoggedIn == false) {
-                            showSnackBar(
-                                "נא להיכנס לחשבון שלך קודם!", scaffoldKey);
-                            return;
-                          }
+                          displayProgressDialog(context);
+                          FirebaseMethods firebaseMethods =
+                              new FirebaseMethods();
+                          await firebaseMethods.createClientAccount(
+                              controllerName.value.text,
+                              controllerLocation.value.text,
+                              controllerPhone.value.text);
 
-                          int timeNow =
-                              new DateTime.now().microsecondsSinceEpoch;
+                          prefs.setString(
+                              "fullName", controllerName.value.text);
+                          prefs.setString(
+                              "location", controllerLocation.value.text);
+                          prefs.setString("phone", controllerPhone.value.text);
+
                           List<String> itemClientId = this.itemClientId;
                           List<String> itemId = this.itemId;
                           List<String> itemName = this.itemName;
@@ -223,25 +251,25 @@ class _ShopCartState extends State<ShopCart> {
                           List<String> itemWeightKilos = this.itemWeightKilos;
                           List<String> itemWeightGrams = this.itemWeightGrams;
 
-                          //show the progress dialog
-                          displayProgressDialog(context);
-                          FirebaseMethods firebaseMethods =
-                              new FirebaseMethods();
                           String orderID =
                               randomBetween(100000, 200000).toString();
-                          await firebaseMethods.addNewOrder(
+                          await firebaseMethods.addNewGuestOrder(
                             "Phone",
                             orderID,
                             itemClientId,
+                            controllerName.value.text,
+                            controllerLocation.value.text,
+                            controllerPhone.value.text,
                             itemId,
                             itemName,
                             itemQuantity,
-                            itemRemarks.length == 0 ? "אין" : itemRemarks,
+                            itemRemarks,
                             itemPrice,
-                            // itemStatus,
+                            itemStatus,
                             itemWeightKilos,
                             itemWeightGrams,
                           );
+
                           closeProgressDialog(context);
                           showSnackBar("הזמנתך התקבלה", scaffoldKey);
                           prefs = await SharedPreferences.getInstance();
@@ -280,16 +308,34 @@ class _ShopCartState extends State<ShopCart> {
                                   "כרטיס אשראי",
                                   style: TextStyle(fontSize: 24)),
                               onPressed: () async {
-                                closeProgressDialog(context);
+                                if (controllerName.value.text != "" &&
+                                    controllerLocation.value.text != "" &&
+                                    controllerPhone.value.text != "") {
+                                  displayProgressDialog(context);
+                                  FirebaseMethods firebaseMethods =
+                                      new FirebaseMethods();
+                                  await firebaseMethods.createClientAccount(
+                                      controllerName.value.text,
+                                      controllerLocation.value.text,
+                                      controllerPhone.value.text);
 
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          CreditCards(this.creditCards)),
-                                );
-                                Navigator.of(context).pop();
-                                Navigator.of(context).pop();
+                                  prefs.setString(
+                                      "fullName", controllerName.value.text);
+                                  prefs.setString("location",
+                                      controllerLocation.value.text);
+                                  prefs.setString(
+                                      "phone", controllerPhone.value.text);
+                                  closeProgressDialog(context);
+
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            CreditCards(this.creditCards)),
+                                  );
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                }
                               },
                             )
                           : Container(),
@@ -304,13 +350,7 @@ class _ShopCartState extends State<ShopCart> {
     //let the client decide which payment method to use: by phone, by Paypal, by credit card
     if (this.cartContents.length == 0) return;
 
-    String acctEmail = prefs.getString("acctEmail");
-
-    if (acctEmail == "guest@gmail.com") {
-      showSnackBar("נא להיכנס לחשבון שלך קודם", scaffoldKey);
-    } else {
-      _showMaterialDialog();
-    }
+    _showMaterialDialog();
   }
 
   @override

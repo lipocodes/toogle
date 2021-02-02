@@ -75,6 +75,37 @@ class _MyHomePageState extends State<MyHomePage> {
   String searchPattern = "";
   int shopTransitions = 0;
   String phoneShop = "";
+  TextEditingController controllerPhone = TextEditingController();
+
+  Future<void> displayDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('נא להכניס מספר טלפון'),
+          content: TextField(
+            textDirection: TextDirection.ltr,
+            controller: controllerPhone,
+            //decoration: InputDecoration(hintText: "מספר הטלפון שלך"),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('ביטול'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            FlatButton(
+              child: Text('אישור'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   loginAsGuest() async {
     bool response = false;
@@ -942,11 +973,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               new ListTile(
-                enabled: this.isLoggedIn == true &&
-                        this.acctEmail != 'guest@gmail.com'
-                    ? true
-                    : false,
-                onTap: () {
+                onTap: () async {
+                  await displayDialog(context);
+                  if (controllerPhone.value.text.length == 0) return;
+                  await prefs.setString(
+                      "clientPhone", controllerPhone.value.text);
                   Navigator.of(context).push(new CupertinoPageRoute(
                       builder: (BuildContext context) => new ShopHistory()));
                 },
@@ -1017,7 +1048,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future checkIfLoggedIn() async {
+  checkIfLoggedIn() async {
     if (isLoggedIn == false) {
       String response = await Navigator.of(context).push(new CupertinoPageRoute(
           builder: (BuildContext context) => new ShopLogin()));

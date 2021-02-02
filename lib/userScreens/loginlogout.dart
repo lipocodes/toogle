@@ -102,7 +102,7 @@ class _ShopLoginState extends State<ShopLogin> {
     } else {
       closeProgressDialog(context);
       email.text = "";
-      password.text="";
+      password.text = "";
       showSnackBar("שם משתמש או סיסמא - לא", scaffoldKey);
       await firebaseMethod.loginUser(
           email: "guest@gmail.com", password: "123456");

@@ -17,6 +17,25 @@ class FirebaseMethods /*implements AppMethods*/ {
   Firestore firestore = Firestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
 
+  retrieveShopList(bool isLoggedIn) async {
+    List<String> detailsShops = [];
+
+    if (isLoggedIn == false) return detailsShops;
+    final QuerySnapshot result =
+        await firestore.collection('shops').getDocuments();
+
+    final List<DocumentSnapshot> snapshot = result.documents;
+
+    for (int i = 0; i < snapshot.length; i++) {
+      String temp = snapshot[i].data['shopID'].toString() +
+          "^^^" +
+          snapshot[i].data['shopFullName'].toString();
+      detailsShops.add(temp);
+    }
+
+    return detailsShops;
+  }
+
   retrieveVisitedShopProducts(String visitedShopID) async {
     List<String> list = [];
     final QuerySnapshot result =
@@ -66,7 +85,7 @@ class FirebaseMethods /*implements AppMethods*/ {
     return user == null ? notComplete() : complete();
   }
 
-  Future<String> createUserAccount({
+  createUserAccount({
     String fullName,
     String fullAddress,
     String phone,
@@ -158,7 +177,7 @@ class FirebaseMethods /*implements AppMethods*/ {
 
   Future updateUserOrders(
       List<String> newList, String clientId, String r, String orderID) async {
-    String str1 = newList[4];
+    String str1 = newList[3];
     String str2 = str1.substring(1).substring(0, str1.length - 2);
 
     // a list holding the multiple shopsOrders for this client
@@ -185,14 +204,14 @@ class FirebaseMethods /*implements AppMethods*/ {
     }
 
     final QuerySnapshot result = await firestore
-        .collection(usersData)
-        .where('userID', isEqualTo: clientId)
+        .collection('clientsData')
+        .where('phone', isEqualTo: clientId)
         .getDocuments();
 
     final List<DocumentSnapshot> snapshot = result.documents;
 
     await firestore
-        .collection(usersData)
+        .collection('clientsData')
         .document(snapshot[0].documentID)
         .updateData({'shopsOrders': list1});
   }
@@ -212,7 +231,7 @@ class FirebaseMethods /*implements AppMethods*/ {
           .collection(usersData)
           .where('userID', isEqualTo: id)
           .getDocuments();
-      final List<DocumentSnapshot> snapshot1 = result.documents;
+      final List<DocumentSnapshot> snapshot1 = result1.documents;
 
       await firestore
           .collection(usersData)
@@ -473,20 +492,18 @@ class FirebaseMethods /*implements AppMethods*/ {
 
   retrieveClientDetails(String clientId) async {
     QuerySnapshot result = await firestore
-        .collection(usersData)
-        .where("userID", isEqualTo: clientId)
+        .collection('clientsData')
+        .where('phone', isEqualTo: clientId)
         .getDocuments();
     final List<DocumentSnapshot> snapshot = result.documents;
 
     List<String> listClientDetails = [];
 
     for (int i = 0; i < snapshot.length; i++) {
-      listClientDetails.add(snapshot[i]['accountFullName'].toString());
-      listClientDetails.add(snapshot[i]['userEmail'].toString());
-      listClientDetails.add(snapshot[i]['phoneNumber'].toString());
-      listClientDetails.add(snapshot[i]['address'].toString());
+      listClientDetails.add(snapshot[i]['fullName'].toString());
+      listClientDetails.add(snapshot[i]['location'].toString());
+      listClientDetails.add(snapshot[i]['phone'].toString());
       listClientDetails.add(snapshot[i]['shopsOrders'].toString());
-      listClientDetails.add(snapshot[i]['userID'].toString());
     }
 
     return listClientDetails;
@@ -512,7 +529,7 @@ class FirebaseMethods /*implements AppMethods*/ {
     }
   }
 
-  Future<String> removeOrder(int index, String email) async {
+  removeOrder(int index, String email) async {
     String userEmail = await getStringDataLocally(key: "userEmail");
     String shopID = await getStringDataLocally(key: "shopID");
 
@@ -539,8 +556,8 @@ class FirebaseMethods /*implements AppMethods*/ {
     } on PlatformException catch (e) {}
 
     QuerySnapshot result1 = await firestore
-        .collection('usersData')
-        .where('userID', isEqualTo: clientId[index])
+        .collection('clientsData')
+        .where("phone", isEqualTo: creatorID)
         .getDocuments();
 
     final List<DocumentSnapshot> snapshot1 = result1.documents;
@@ -553,8 +570,8 @@ class FirebaseMethods /*implements AppMethods*/ {
     shopsOrders = temp;
 
     final QuerySnapshot result2 = await firestore
-        .collection(usersData)
-        .where('userID', isEqualTo: clientId[index])
+        .collection('clientsData')
+        .where("phone", isEqualTo: creatorID)
         .getDocuments();
 
     final List<DocumentSnapshot> snapshot2 = result2.documents;
@@ -569,13 +586,143 @@ class FirebaseMethods /*implements AppMethods*/ {
     }
   }
 
-  Future<List<String>> retrieveShopsOrders() async {
+  createClientAccount(String fullName, String location, String phone) async {
+    try {
+      final QuerySnapshot result = await firestore
+          .collection("clientsData")
+          .where('phone', isEqualTo: phone)
+          .getDocuments();
+
+      final List<DocumentSnapshot> snapshot = result.documents;
+
+      if (snapshot.length == 0) {
+        await firestore.collection("clientsData").add({
+          "fullName": fullName,
+          "location": location,
+          "phone": phone,
+        });
+      } else {
+        var querySnapshot = await firestore
+            .collection("clientsData")
+            .where('phone', isEqualTo: phone)
+            .getDocuments();
+
+        String id = snapshot[0].data['address'].toString();
+
+        await firestore.collection(usersData).document(id).updateData({
+          "fullName": fullName,
+          "location": location,
+          "phone": phone,
+        });
+      }
+    } catch (e) {
+      print("eeeeeeeeeeeeeeeee=" + e.toString());
+    }
+  }
+
+  addNewGuestOrder(
+      String paymentMethod,
+      String orderID,
+      List<String> itemClientId,
+      String fullName,
+      String location,
+      String phone,
+      List<String> itemId,
+      List<String> itemName,
+      List<String> itemQuantity,
+      List<String> itemRemarks,
+      List<String> itemPrice,
+      List<String> itemStatus,
+      List<String> itemWeightKilos,
+      List<String> itemWeightGrams) async {
+    String visitedShopID = await getStringDataLocally(key: "visitedShopID");
+
+    var now = new DateTime.now();
+    var formatter = new DateFormat('dd-MM-yyyy');
+    String formatted = formatter.format(now);
+
+    var querySnapshot1 = await firestore
+        .collection('clientsData')
+        .where('phone', isEqualTo: phone)
+        .getDocuments();
+    final List<DocumentSnapshot> snapshot = querySnapshot1.documents;
+
+    List tempList = snapshot[0].data['shopsOrders'];
+    List shopsOrders = [];
+    try {
+      shopsOrders = snapshot[0].data['shopsOrders'];
+    } catch (e) {
+      shopsOrders = [];
+    }
+    int len = 0;
+    if (shopsOrders != null) len = shopsOrders.length;
+    List<String> shopsOrderss = [];
+    for (int k = 0; k < len; k++) {
+      shopsOrderss.add(shopsOrders[k].toString());
+    }
+
+    shopsOrderss.add(visitedShopID +
+        '^^^' +
+        orderID +
+        "^^^" +
+        formatted +
+        "^^^" +
+        "בהמתנה לטיפול" +
+        "^^^" +
+        paymentMethod);
+
+    var querySnapshot2 = await firestore
+        .collection('clientsData')
+        .where('phone', isEqualTo: phone)
+        .getDocuments();
+    final List<DocumentSnapshot> snapshot2 = querySnapshot2.documents;
+    String id = snapshot2[0].documentID;
+
+    var querySnapshot3 = await firestore
+        .collection('clientsData')
+        .document(id)
+        .updateData({'shopID': shopID});
+
+    await firestore
+        .collection('orders_' + visitedShopID)
+        .document(orderID)
+        .setData({creatorID: phone, 'paymentMethod': paymentMethod});
+    List<String> orderDetails = [];
+
+    for (int i = 0; i < itemId.length; i++) {
+      String remark = itemRemarks[i].length > 0 ? itemRemarks[i] : "אין הערות";
+      String str = /*itemClientId[i]*/ phone +
+          "^^^" +
+          itemId[i] +
+          "^^^" +
+          itemName[i] +
+          "^^^" +
+          itemQuantity[i] +
+          "^^^" +
+          "אין הערות" +
+          "^^^" +
+          itemPrice[i] +
+          "^^^" +
+          itemWeightKilos[i] +
+          "^^^" +
+          itemWeightGrams[i];
+
+      orderDetails.add(str);
+
+      var querySnapshot4 = await firestore
+          .collection('orders_' + visitedShopID)
+          .document(orderID)
+          .updateData({i.toString(): str});
+    }
+  }
+
+  retrieveShopsOrders(String phone) async {
     try {
       String userEmail = await getStringDataLocally(key: "userEmail");
 
       final QuerySnapshot result = await firestore
-          .collection(usersData)
-          .where('userEmail', isEqualTo: userEmail)
+          .collection('clientsData')
+          .where('phone', isEqualTo: phone)
           .getDocuments();
       final List<DocumentSnapshot> snapshot = result.documents;
 
@@ -589,7 +736,7 @@ class FirebaseMethods /*implements AppMethods*/ {
     } catch (e) {}
   }
 
-  Future<List<String>> retrieveShopDetails(String shopID) async {
+  retrieveShopDetails(String shopID) async {
     try {
       final QuerySnapshot result = await firestore
           .collection('shops')
@@ -616,8 +763,7 @@ class FirebaseMethods /*implements AppMethods*/ {
     }
   }
 
-  Future<List<String>> retreiveOrderDetails(
-      String shopID, String orderID) async {
+  retreiveOrderDetails(String shopID, String orderID) async {
     List<String> response = [];
 
     try {
@@ -674,7 +820,7 @@ class FirebaseMethods /*implements AppMethods*/ {
     }
   }
 
-//when crteating/editing the shop: updating its details
+  //when crteating/editing the shop: updating its details
   Future<bool> updateShopDetails(
     String shopID,
     String shopName,
@@ -751,25 +897,6 @@ class FirebaseMethods /*implements AppMethods*/ {
     } on PlatformException catch (e) {
       return false;
     }
-  }
-
-  retrieveShopList(bool isLoggedIn) async {
-    List<String> detailsShops = [];
-
-    if (isLoggedIn == false) return detailsShops;
-    final QuerySnapshot result =
-        await firestore.collection('shops').getDocuments();
-
-    final List<DocumentSnapshot> snapshot = result.documents;
-
-    for (int i = 0; i < snapshot.length; i++) {
-      String temp = snapshot[i].data['shopID'].toString() +
-          "^^^" +
-          snapshot[i].data['shopFullName'].toString();
-      detailsShops.add(temp);
-    }
-
-    return detailsShops;
   }
 
   Future<String> getPhoneVisitedShop(String visitedShopID) async {
