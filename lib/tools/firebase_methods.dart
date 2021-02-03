@@ -557,11 +557,16 @@ class FirebaseMethods /*implements AppMethods*/ {
 
     QuerySnapshot result1 = await firestore
         .collection('clientsData')
-        .where("phone", isEqualTo: creatorID)
+        .where("phone", isEqualTo: clientId[index])
         .getDocuments();
 
     final List<DocumentSnapshot> snapshot1 = result1.documents;
-    List shopsOrders = snapshot1[0]['shopsOrders'];
+    List shopsOrders = [];
+    try {
+      shopsOrders = snapshot1[0]['shopsOrders'];
+    } catch (e) {
+      shopsOrders = [];
+    }
 
     List temp = [];
     for (int i = 0; i < shopsOrders.length; i++) {
@@ -571,14 +576,14 @@ class FirebaseMethods /*implements AppMethods*/ {
 
     final QuerySnapshot result2 = await firestore
         .collection('clientsData')
-        .where("phone", isEqualTo: creatorID)
+        .where("phone", isEqualTo: clientId[index])
         .getDocuments();
 
     final List<DocumentSnapshot> snapshot2 = result2.documents;
 
     try {
       await firestore
-          .collection(usersData)
+          .collection('clientsData')
           .document(snapshot2[0].documentID)
           .updateData({'shopsOrders': shopsOrders});
     } on PlatformException catch (e) {
@@ -607,9 +612,10 @@ class FirebaseMethods /*implements AppMethods*/ {
             .where('phone', isEqualTo: phone)
             .getDocuments();
 
-        String id = snapshot[0].data['address'].toString();
+        final List<DocumentSnapshot> snapshot = querySnapshot.documents;
+        String id = snapshot[0].documentID;
 
-        await firestore.collection(usersData).document(id).updateData({
+        await firestore.collection('clientsData').document(id).updateData({
           "fullName": fullName,
           "location": location,
           "phone": phone,
@@ -647,13 +653,13 @@ class FirebaseMethods /*implements AppMethods*/ {
         .getDocuments();
     final List<DocumentSnapshot> snapshot = querySnapshot1.documents;
 
-    List tempList = snapshot[0].data['shopsOrders'];
     List shopsOrders = [];
     try {
       shopsOrders = snapshot[0].data['shopsOrders'];
     } catch (e) {
       shopsOrders = [];
     }
+
     int len = 0;
     if (shopsOrders != null) len = shopsOrders.length;
     List<String> shopsOrderss = [];
@@ -681,7 +687,7 @@ class FirebaseMethods /*implements AppMethods*/ {
     var querySnapshot3 = await firestore
         .collection('clientsData')
         .document(id)
-        .updateData({'shopID': shopID});
+        .updateData({'shopsOrders': shopsOrderss});
 
     await firestore
         .collection('orders_' + visitedShopID)

@@ -192,8 +192,10 @@ class _AppOrdersState extends State<AppOrders> {
     );
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("מחיקת הזמנה"),
-      content: Text("למחוק את ההזמנה?"),
+      title: Directionality(
+          textDirection: TextDirection.rtl, child: Text("מחיקת הזמנה")),
+      content: Directionality(
+          textDirection: TextDirection.rtl, child: Text("למחוק את ההזמנה?")),
       actions: [
         cancelButton,
         continueButton,

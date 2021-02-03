@@ -184,163 +184,203 @@ class _ShopCartState extends State<ShopCart> {
   _showMaterialDialog() {
     showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (_) => new AlertDialog(
-              //title: new Text("Choose Payment Method"),
+              //title: Center(child: new Text(":אמצעי התשלום")),
               content: Container(
-                height: 180,
+                height: 250,
                 child: Column(
                   children: [
-                    Text("שם מלא"),
-                    TextField(
+                    // Text("שם מלא"),
+                    Directionality(
                       textDirection: TextDirection.rtl,
-                      onChanged: (value) {},
-                      controller: controllerName,
-                      // decoration: InputDecoration(hintText: "שם מלא"),
+                      child: TextField(
+                        textDirection: TextDirection.rtl,
+                        onChanged: (value) {},
+                        controller: controllerName,
+                        decoration: InputDecoration(hintText: "שם מלא"),
+                      ),
                     ),
                     SizedBox(height: 20),
-                    Text("מיקום"),
-                    TextField(
+                    //Text("מיקום"),
+                    Directionality(
                       textDirection: TextDirection.rtl,
-                      onChanged: (value) {},
-                      controller: controllerLocation,
-                      //decoration: InputDecoration(hintText: "מיקום"),
+                      child: TextField(
+                        textDirection: TextDirection.rtl,
+                        onChanged: (value) {},
+                        controller: controllerLocation,
+                        decoration: InputDecoration(hintText: "מיקום"),
+                      ),
                     ),
                     SizedBox(height: 20),
-                    Text("מספר טלפון"),
-                    TextField(
+                    //Text("מספר טלפון"),
+                    Directionality(
                       textDirection: TextDirection.rtl,
-                      onChanged: (value) {},
-                      controller: controllerPhone,
-                      //decoration: InputDecoration(hintText: "מספר טלפון"),
+                      child: TextField(
+                        textDirection: TextDirection.rtl,
+                        onChanged: (value) {},
+                        controller: controllerPhone,
+                        decoration: InputDecoration(hintText: "מספר טלפון"),
+                      ),
                     ),
                   ],
                 ),
               ),
               actions: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: Column(
-                    children: [
-                      FlatButton(
-                        //color: Colors.orange,
-                        child: /*Image.asset('images/paypal.png')*/ Text(
-                            "טלפון",
-                            style: TextStyle(fontSize: 24)),
-                        onPressed: () async {
-                          displayProgressDialog(context);
-                          FirebaseMethods firebaseMethods =
-                              new FirebaseMethods();
-                          await firebaseMethods.createClientAccount(
-                              controllerName.value.text,
-                              controllerLocation.value.text,
-                              controllerPhone.value.text);
+                Column(
+                  children: [
+                    Center(child: new Text(":נא לבחור אמצעי תשלום")),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: FlatButton(
+                            //color: Colors.orange,
+                            child:
+                                /*Image.asset(
+                                'images/paypal.png')*/
+                                Text("טלפון", style: TextStyle(fontSize: 20)),
+                            onPressed: () async {
+                              if (controllerName.value.text != "" &&
+                                  controllerLocation.value.text != "" &&
+                                  controllerPhone.value.text != "") {
+                                displayProgressDialog(context);
+                                FirebaseMethods firebaseMethods =
+                                    new FirebaseMethods();
+                                await firebaseMethods.createClientAccount(
+                                    controllerName.value.text,
+                                    controllerLocation.value.text,
+                                    controllerPhone.value.text);
 
-                          prefs.setString(
-                              "fullName", controllerName.value.text);
-                          prefs.setString(
-                              "location", controllerLocation.value.text);
-                          prefs.setString("phone", controllerPhone.value.text);
+                                prefs.setString(
+                                    "fullName", controllerName.value.text);
+                                prefs.setString(
+                                    "location", controllerLocation.value.text);
+                                prefs.setString(
+                                    "phone", controllerPhone.value.text);
 
-                          List<String> itemClientId = this.itemClientId;
-                          List<String> itemId = this.itemId;
-                          List<String> itemName = this.itemName;
-                          List<String> itemQuantity = this.itemQuantity;
-                          List<String> itemRemarks = this.itemRemarks;
-                          List<String> itemPrice = this.itemPrice;
-                          List<String> itemStatus = this.itemStatus;
-                          List<String> itemWeightKilos = this.itemWeightKilos;
-                          List<String> itemWeightGrams = this.itemWeightGrams;
-
-                          String orderID =
-                              randomBetween(100000, 200000).toString();
-                          await firebaseMethods.addNewGuestOrder(
-                            "Phone",
-                            orderID,
-                            itemClientId,
-                            controllerName.value.text,
-                            controllerLocation.value.text,
-                            controllerPhone.value.text,
-                            itemId,
-                            itemName,
-                            itemQuantity,
-                            itemRemarks,
-                            itemPrice,
-                            itemStatus,
-                            itemWeightKilos,
-                            itemWeightGrams,
-                          );
-
-                          closeProgressDialog(context);
-                          showSnackBar("הזמנתך התקבלה", scaffoldKey);
-                          prefs = await SharedPreferences.getInstance();
-                          prefs.setStringList("cartContents", []);
-                          prefs.setInt("cartCounter", 0);
-
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pop();
-                          setState(() {
-                            this.itemName = [];
-                          });
-                        },
-                      ),
-                      this.paypal.length > 0
-                          ? FlatButton(
-                              //color: Colors.orange,
-                              child: /*Image.asset('images/paypal.png')*/ Text(
-                                  "פייפאל",
-                                  style: TextStyle(fontSize: 24)),
-                              onPressed: () async {
+                                List<String> itemClientId = this.itemClientId;
+                                List<String> itemId = this.itemId;
+                                List<String> itemName = this.itemName;
+                                List<String> itemQuantity = this.itemQuantity;
+                                List<String> itemRemarks = this.itemRemarks;
+                                List<String> itemPrice = this.itemPrice;
+                                List<String> itemStatus = this.itemStatus;
+                                List<String> itemWeightKilos =
+                                    this.itemWeightKilos;
+                                List<String> itemWeightGrams =
+                                    this.itemWeightGrams;
+                                String orderID =
+                                    randomBetween(100000, 200000).toString();
+                                await firebaseMethods.addNewGuestOrder(
+                                  "Phone",
+                                  orderID,
+                                  itemClientId,
+                                  controllerName.value.text,
+                                  controllerLocation.value.text,
+                                  controllerPhone.value.text,
+                                  itemId,
+                                  itemName,
+                                  itemQuantity,
+                                  itemRemarks,
+                                  itemPrice,
+                                  itemStatus,
+                                  itemWeightKilos,
+                                  itemWeightGrams,
+                                );
                                 closeProgressDialog(context);
-                                await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            Paypal(this.paypal)));
+                                showSnackBar("הזמנתך התקבלה", scaffoldKey);
+                                prefs = await SharedPreferences.getInstance();
+                                prefs.setStringList("cartContents", []);
+                                prefs.setInt("cartCounter", 0);
 
                                 Navigator.of(context).pop();
                                 Navigator.of(context).pop();
-                              },
-                            )
-                          : Container(),
-                      this.creditCards.length > 0
-                          ? FlatButton(
-                              child: /*Image.asset('images/creditCard.png')*/ Text(
-                                  "כרטיס אשראי",
-                                  style: TextStyle(fontSize: 24)),
-                              onPressed: () async {
-                                if (controllerName.value.text != "" &&
-                                    controllerLocation.value.text != "" &&
-                                    controllerPhone.value.text != "") {
-                                  displayProgressDialog(context);
-                                  FirebaseMethods firebaseMethods =
-                                      new FirebaseMethods();
-                                  await firebaseMethods.createClientAccount(
-                                      controllerName.value.text,
-                                      controllerLocation.value.text,
-                                      controllerPhone.value.text);
+                                setState(() {
+                                  this.itemName = [];
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                        this.paypal.length > 0
+                            ? FlatButton(
+                                //color: Colors.orange,
+                                child: /*Image.asset('images/paypal.png')*/ Text(
+                                    "פייפאל",
+                                    style: TextStyle(fontSize: 20)),
+                                onPressed: () async {
+                                  if (controllerName.value.text != "" &&
+                                      controllerLocation.value.text != "" &&
+                                      controllerPhone.value.text != "") {
+                                    displayProgressDialog(context);
+                                    FirebaseMethods firebaseMethods =
+                                        new FirebaseMethods();
+                                    await firebaseMethods.createClientAccount(
+                                        controllerName.value.text,
+                                        controllerLocation.value.text,
+                                        controllerPhone.value.text);
 
-                                  prefs.setString(
-                                      "fullName", controllerName.value.text);
-                                  prefs.setString("location",
-                                      controllerLocation.value.text);
-                                  prefs.setString(
-                                      "phone", controllerPhone.value.text);
-                                  closeProgressDialog(context);
+                                    prefs.setString(
+                                        "fullName", controllerName.value.text);
+                                    prefs.setString("location",
+                                        controllerLocation.value.text);
+                                    prefs.setString(
+                                        "phone", controllerPhone.value.text);
+                                    closeProgressDialog(context);
 
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            CreditCards(this.creditCards)),
-                                  );
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pop();
-                                }
-                              },
-                            )
-                          : Container(),
-                    ],
-                  ),
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              Paypal(this.paypal)),
+                                    );
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                              )
+                            : Container(),
+                        this.creditCards.length > 0
+                            ? FlatButton(
+                                child: /*Image.asset('images/creditCard.png')*/ Text(
+                                    "אשראי",
+                                    style: TextStyle(fontSize: 20)),
+                                onPressed: () async {
+                                  if (controllerName.value.text != "" &&
+                                      controllerLocation.value.text != "" &&
+                                      controllerPhone.value.text != "") {
+                                    displayProgressDialog(context);
+                                    FirebaseMethods firebaseMethods =
+                                        new FirebaseMethods();
+                                    await firebaseMethods.createClientAccount(
+                                        controllerName.value.text,
+                                        controllerLocation.value.text,
+                                        controllerPhone.value.text);
+
+                                    prefs.setString(
+                                        "fullName", controllerName.value.text);
+                                    prefs.setString("location",
+                                        controllerLocation.value.text);
+                                    prefs.setString(
+                                        "phone", controllerPhone.value.text);
+                                    closeProgressDialog(context);
+
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              CreditCards(this.creditCards)),
+                                    );
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                              )
+                            : Container(),
+                      ],
+                    ),
+                  ],
                 )
               ],
             ));

@@ -125,20 +125,28 @@ class _PaypalState extends State<Paypal> {
                     this.itemWeightGrams.add(list[9]);
                   }
 
+                  String fullName = prefs.getString("fullName");
+                  String location = prefs.getString("location");
+                  String phone = prefs.getString("phone");
                   FirebaseMethods firebaseMethods = new FirebaseMethods();
+
                   String orderID = randomBetween(100000, 200000).toString();
-                  await firebaseMethods.addNewOrder(
-                      "Paypal",
-                      orderID,
-                      itemClientId,
-                      itemId,
-                      itemName,
-                      itemPrice,
-                      itemQuantity,
-                      itemRemarks.length == 0 ? "אין הערות" : itemRemarks,
-                      //itemStatus,
-                      itemWeightKilos,
-                      itemWeightGrams);
+                  await firebaseMethods.addNewGuestOrder(
+                    "Paypal",
+                    orderID,
+                    itemClientId,
+                    fullName,
+                    location,
+                    phone,
+                    itemId,
+                    itemName,
+                    itemQuantity,
+                    itemRemarks,
+                    itemPrice,
+                    itemStatus,
+                    itemWeightKilos,
+                    itemWeightGrams,
+                  );
 
                   prefs.setStringList('cartContents', []);
                   prefs.setInt("cartCounter", 0);

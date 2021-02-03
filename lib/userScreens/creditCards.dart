@@ -125,19 +125,28 @@ class _CreditCardsState extends State<CreditCards> {
                     this.itemWeightGrams.add(list[9]);
                   }
 
+                  String fullName = prefs.getString("fullName");
+                  String location = prefs.getString("location");
+                  String phone = prefs.getString("phone");
                   FirebaseMethods firebaseMethods = new FirebaseMethods();
-                  await firebaseMethods.addNewOrder(
-                      "CreditCards",
-                      this.orderID,
-                      itemClientId,
-                      itemId,
-                      itemName,
-                      itemPrice,
-                      itemQuantity,
-                      itemRemarks.length == 0 ? "אין הערות" : itemRemarks,
-                      //itemStatus,
-                      itemWeightKilos,
-                      itemWeightGrams);
+
+                  String orderID = randomBetween(100000, 200000).toString();
+                  await firebaseMethods.addNewGuestOrder(
+                    "CreditCard",
+                    orderID,
+                    itemClientId,
+                    fullName,
+                    location,
+                    phone,
+                    itemId,
+                    itemName,
+                    itemQuantity,
+                    itemRemarks,
+                    itemPrice,
+                    itemStatus,
+                    itemWeightKilos,
+                    itemWeightGrams,
+                  );
 
                   prefs.setStringList('cartContents', []);
                   prefs.setInt("cartCounter", 0);
