@@ -1258,9 +1258,7 @@ class _CreateEditShopState extends State<CreateEditShop> {
                                   color: Colors.white,
                                   onPressed: () {
                                     FlutterClipboard.copy(
-                                            "https://shopping-il.com/app/?storeId=" +
-                                                this.shopID +
-                                                "/#/")
+                                            "https://shopping-il.com/app")
                                         .then((value) =>
                                             print('xxxxxxxxxxxxxxxxx'));
                                   },
@@ -1268,24 +1266,25 @@ class _CreateEditShopState extends State<CreateEditShop> {
                                 ),
                               ],
                             ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text("חנות מספר" + "  " + this.shopID,
+                          style: TextStyle(fontSize: 14)),
                       SizedBox(width: 50.0),
                       this.shopID == "noShop"
                           ? Container()
                           : InkWell(
                               child: SelectableText(
-                                "https://shopping-il.com/app/?storeId=" +
-                                    this.shopID +
-                                    "/#/",
+                                "https://shopping-il.com/app",
                                 style: TextStyle(
                                     decoration: TextDecoration.underline,
                                     fontSize: 16,
                                     color: Colors.red,
                                     fontWeight: FontWeight.bold),
                               ),
-                              onTap: () => launch(
-                                  "https://shopping-il.com/app/?storeId=" +
-                                      this.shopID +
-                                      "/#/")),
+                              onTap: () =>
+                                  launch("https://shopping-il.com/app")),
                     ],
                   ),
                 ),

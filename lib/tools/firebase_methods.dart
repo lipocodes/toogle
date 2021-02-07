@@ -12,10 +12,21 @@ import 'dart:convert';
 import 'package:Toogle/tools/app_data.dart';
 import 'dart:io' as io;
 import 'package:dio/dio.dart';
+import 'dart:math';
 
 class FirebaseMethods /*implements AppMethods*/ {
   Firestore firestore = Firestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
+
+  convertShopIDToShopName(String shopID) async {
+    var result = await firestore
+        .collection('shops')
+        .where('shopID', isEqualTo: shopID)
+        .getDocuments();
+    final List<DocumentSnapshot> snapshot = result.documents;
+
+    return snapshot[0].data['shopFullName'].toString();
+  }
 
   retrieveShopList(bool isLoggedIn) async {
     List<String> detailsShops = [];
@@ -63,6 +74,7 @@ class FirebaseMethods /*implements AppMethods*/ {
           .collection(usersData)
           .where('userID', isEqualTo: user.uid)
           .getDocuments();
+
       final List<DocumentSnapshot> snapshot = result.documents;
 
       String id = snapshot[0].data['address'].toString();
@@ -866,18 +878,22 @@ class FirebaseMethods /*implements AppMethods*/ {
           'creditCards': creditCards,
         }, merge: true);
       } else {
-        int timeNow = new DateTime.now().microsecondsSinceEpoch;
-        shopID = timeNow.toString();
+        var querySnapshot;
+        for (int i = 0; i < 1000; i++) {
+          Random random = new Random();
+          shopID = (random.nextInt(1000) + 100).toString();
 
-        final QuerySnapshot result = await firestore
-            .collection('shops')
-            .where('shopID', isEqualTo: shopID)
-            .getDocuments();
-        try {
-          final List<DocumentSnapshot> snapshot = result.documents;
-          String temp = snapshot[0].data['categoryLevel1'].toString();
-        } catch (e) {
-          isItNewShop = true;
+          final QuerySnapshot result = await firestore
+              .collection('shops')
+              .where('shopID', isEqualTo: shopID)
+              .getDocuments();
+          try {
+            List<String> categoryLevel1 =
+                querySnapshot.docs[0].data()['categoryLevel1'];
+          } catch (e) {
+            isItNewShop = true;
+          }
+          if (isItNewShop == true) break; //if no
         }
 
         await firestore.collection('shops').document(shopID).setData({
