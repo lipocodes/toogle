@@ -1,0 +1,77 @@
+{
+  "project_info": {
+    "project_number": "456974494916",
+    "firebase_url": "https://toogle-8f686.firebaseio.com",
+    "project_id": "toogle-8f686",
+    "storage_bucket": "toogle-8f686.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:456974494916:android:42d01d09deaf74e931ad91",
+        "android_client_info": {
+          "package_name": "com.ap_shopp.Toogle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "456974494916-jtga1fqiu0gjjfackgpop6hip8tj5qq8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD63F084F_WoF1SgUQ5xxFdZxEhwAWxsRg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "456974494916-jtga1fqiu0gjjfackgpop6hip8tj5qq8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:456974494916:android:22011a303a48737a31ad91",
+        "android_client_info": {
+          "package_name": "com.ap_shopp.Toogle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "456974494916-p11ce3vk3vd7nd843vp38valel3stl8h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ap_shopp.Toogle",
+            "certificate_hash": "bad775071fec10338992ab25878865f23096e7ab"
+          }
+        },
+        {
+          "client_id": "456974494916-jtga1fqiu0gjjfackgpop6hip8tj5qq8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD63F084F_WoF1SgUQ5xxFdZxEhwAWxsRg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "456974494916-jtga1fqiu0gjjfackgpop6hip8tj5qq8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
