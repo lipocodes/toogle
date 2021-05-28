@@ -81,412 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController controllerShopNumber = TextEditingController();
   String defaultShopName = "ברכת המזון";
 
-  switchShop(String numberShop) async {
-    int cartCounter;
-    this.categoryLevel1 = [];
-    this.categoryLevel2 = [];
-    this.categoryLevel3 = [];
-    this.shopCategoryLevel1 = [];
-    this.shopCategoryLevel2 = [];
-    this.shopCategoryLevel3 = [];
-    try {
-      cartCounter = prefs.getInt("cartCounter");
-
-      if (cartCounter == null)
-        cartCounter = 0;
-      else if (cartCounter > 0) {
-        cartCounter = 0;
-        prefs.setInt("cartCounter", 0);
-        prefs.setStringList("cartContents", []);
-      }
-    } catch (e) {
-      print("eeeeeeeeeeeee=" + e.toString());
-    }
-
-    String shopName =
-        await firebaseMethods.convertShopIDToShopName(numberShop.trim());
-
-//this.listShopName
-    this.visitedShopID = numberShop.trim();
-    var listCategories = await firebaseMethods.getCategories(visitedShopID);
-
-    for (int a = 0; a < listCategories[0].length; a++) {
-      categoryLevel1.add(listCategories[0][a].toString());
-    }
-
-    for (int a = 0; a < listCategories[1].length; a++) {
-      categoryLevel2.add(listCategories[1][a].toString());
-    }
-
-    for (int a = 0; a < listCategories[2].length; a++) {
-      categoryLevel3.add(listCategories[2][a].toString());
-    }
-
-    this.shopCategoryLevel1 = categoryLevel1;
-    this.shopCategoryLevel2 = categoryLevel2;
-    this.shopCategoryLevel3 = categoryLevel3;
-
-    this.dropDownCategory1 = buildAndGetDropDownItems(this.shopCategoryLevel1);
-
-    List<String> list1 = [];
-    for (int i = 0; i < this.shopCategoryLevel1.length; i++) {
-      String temp = this.shopCategoryLevel1[i];
-      int pos = temp.indexOf("^^^");
-      if (pos <= 0) continue;
-      temp = temp.substring(pos + 3);
-      list1.add(temp);
-    }
-
-    this.shopCategoryLevel1 = list1;
-
-    this.dropDownCategory1 = buildAndGetDropDownItems(this.shopCategoryLevel1);
-
-    this.selectedCategory1 = dropDownCategory1[0].value;
-
-    listProductsVisitedShop =
-        await firebaseMethods.retrieveVisitedShopProducts(visitedShopID);
-
-    setState(() {
-      selectedShop = shopName;
-    });
-  }
-
-  Future<void> openDialogSwitchShop() {
-    return showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: Directionality(
-              textDirection: TextDirection.rtl, child: Text('מספר החנות')),
-          content: Directionality(
-            textDirection: TextDirection.rtl,
-            child: TextField(
-              controller: controllerShopNumber,
-              decoration: InputDecoration(hintText: "נא להכניס מספר חנות"),
-            ),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('ביטול'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            FlatButton(
-              child: Text('אישור'),
-              onPressed: () {
-                this.switchShop(controllerShopNumber.text);
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> displayDialog(BuildContext context) async {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('נא להכניס מספר טלפון'),
-          content: TextField(
-            textDirection: TextDirection.ltr,
-            controller: controllerPhone,
-            //decoration: InputDecoration(hintText: "מספר הטלפון שלך"),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('ביטול'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            FlatButton(
-              child: Text('אישור'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  loginAsGuest() async {
-    bool response = false;
-    try {
-      response = await firebaseMethods.loginUser(
-          email: "guest@gmail.com", password: "123456");
-
-      await getCurrentUser();
-    } catch (e) {
-      response = false;
-    }
-  }
-
-  Future getCurrentUser() async {
-    isLoggedIn = await getBoolDataLocally(key: loggedIn);
-    if (isLoggedIn == true) {
-      acctAddress = await getStringDataLocally(key: address);
-      acctName = await getStringDataLocally(key: fullName);
-      acctUserID = await getStringDataLocally(key: userID);
-      acctEmail = await getStringDataLocally(key: userEmail);
-      acctPhone = await getStringDataLocally(key: userPhone);
-      acctPhotoURL = await getStringDataLocally(key: photoURL);
-      acctShopID = await getStringDataLocally(key: shopID);
-    }
-
-    acctName == null ? acctName = "אורח" : acctName = acctName;
-    acctUserID == null ? acctUserID = "" : acctUserID = acctUserID;
-    acctEmail == null ? acctEmail = "guest@gmail.com" : acctEmail = acctEmail;
-    acctPhone == null ? acctPhone = "" : acctPhone = acctPhone;
-
-    acctPhotoURL == null ? acctPhotoURL = "" : acctPhotoURL = acctPhotoURL;
-    acctShopID == null ? acctShopID = "" : acctShopID = acctShopID;
-    isLoggedIn == null ? isLoggedIn = false : isLoggedIn = true;
-
-    this.shopList = [];
-    this.listShopID = [];
-    this.listShopName = [];
-
-    if (this.visitedShopID.length != 3) this.visitedShopID = "325";
-    String shopName =
-        await firebaseMethods.convertShopIDToShopName(this.visitedShopID);
-
-    var listCategories = await firebaseMethods.getCategories(visitedShopID);
-
-    categoryLevel1 = [];
-    categoryLevel2 = [];
-    categoryLevel3 = [];
-
-    for (int a = 0; a < listCategories[0].length; a++) {
-      categoryLevel1.add(listCategories[0][a].toString());
-    }
-
-    for (int a = 0; a < listCategories[1].length; a++) {
-      categoryLevel2.add(listCategories[1][a].toString());
-    }
-
-    for (int a = 0; a < listCategories[2].length; a++) {
-      categoryLevel3.add(listCategories[2][a].toString());
-    }
-
-    this.shopCategoryLevel1 = categoryLevel1;
-    this.shopCategoryLevel2 = categoryLevel2;
-    this.shopCategoryLevel3 = categoryLevel3;
-
-    this.dropDownCategory1 = buildAndGetDropDownItems(this.shopCategoryLevel1);
-
-    List<String> list1 = [];
-    for (int i = 0; i < this.shopCategoryLevel1.length; i++) {
-      String temp = this.shopCategoryLevel1[i];
-      int pos = temp.indexOf("^^^");
-      if (pos <= 0) continue;
-      temp = temp.substring(pos + 3);
-      list1.add(temp);
-    }
-
-    this.shopCategoryLevel1 = list1;
-
-    this.dropDownCategory1 = buildAndGetDropDownItems(this.shopCategoryLevel1);
-
-    this.selectedCategory1 = dropDownCategory1[0].value;
-
-    listProductsVisitedShop =
-        await firebaseMethods.retrieveVisitedShopProducts(visitedShopID);
-
-    setState(() {
-      selectedShop = shopName;
-    });
-  }
-
-  retrieveShopList() async {
-    firebaseMethods.retrieveShopList(this.isLoggedIn);
-  }
-
-  Future retrieveShopID() async {
-    try {
-      var temp = await getStringDataLocally(key: "shopID");
-
-      if (temp.runtimeType.toString() == "String") {
-        this.shopID = temp.toString();
-        if (this.shopID == "noShop") return;
-        List<String> shopDetails =
-            await firebaseMethods.retrieveShopDetails(this.shopID);
-
-        this.selectedShop =
-            shopDetails[1].toString() != null ? shopDetails[1].toString() : "";
-
-        this.shopCategory = shopDetails[5].toString();
-        writeDataLocally(
-            key: "creditCardPayment", value: shopDetails[6].toString());
-        writeDataLocally(
-            key: "paypalPayment", value: shopDetails[7].toString());
-        if (this.shopCategory == "חומרי בניין" ||
-            this.shopCategory == "???? ????") {
-          this.shopCategoryLevel1 = shopBuildingMaterials;
-        } else if (this.shopCategory == "צעצועים ומשחקים" ||
-            this.shopCategory == "????? ????") {
-          this.shopCategoryLevel1 = shopToys;
-        }
-      } else
-        this.shopID = "";
-    } catch (e) {
-      this.shopID = "";
-    }
-    //setState(() {});
-
-    return;
-  }
-
-  void changedDropDownSubCategory(String argumentSelectedSubCategory) {
-    selectedSubCategory = argumentSelectedSubCategory;
-
-    setState(() {});
-  }
-
-  void changedDropDownCategory1(String argumentSelectedCategory1) {
-    this.selectedCategory1 = "הכל";
-    this.selectedCategory2 = "הכל";
-    this.selectedCategory3 = "הכל";
-    this.shopCategoryLevel1 = [];
-    this.shopCategoryLevel2 = [];
-    setState(() {
-      String codeTemp1 = "";
-      for (int i = 0; i < categoryLevel1.length; i++) {
-        int pos = categoryLevel1[i].indexOf("^^^");
-        if (pos <= 0) continue;
-        String temp = categoryLevel1[i].substring(pos + 3);
-        codeTemp1 = categoryLevel1[i].substring(0, pos);
-        if (temp == argumentSelectedCategory1) break;
-      }
-
-      selectedCategory1 = argumentSelectedCategory1;
-
-      String codeTemp2 = "";
-      for (int i = 0; i < categoryLevel2.length; i++) {
-        int pos = categoryLevel2[i].indexOf("^^^");
-        if (pos <= 0) continue;
-        String temp = categoryLevel2[i].substring(pos + 3);
-        codeTemp2 = categoryLevel2[i].substring(0, pos);
-
-        if (codeTemp2.substring(0, 3) == codeTemp1 ||
-            codeTemp2.substring(0, 3) == "000") {
-          this.shopCategoryLevel2.add(temp);
-        }
-      }
-
-      this.dropDownCategory2 =
-          buildAndGetDropDownItems(this.shopCategoryLevel2);
-      this.selectedCategory2 = dropDownCategory2[0].value;
-    });
-  }
-
-  void changedDropDownCategory2(String argumentSelectedCategory2) {
-    this.selectedCategory2 = "הכל";
-    this.selectedCategory3 = "הכל";
-    this.shopCategoryLevel1 = [];
-    this.shopCategoryLevel2 = [];
-    this.shopCategoryLevel3 = [];
-    setState(() {
-      String codeTemp2 = "";
-      for (int i = 0; i < categoryLevel2.length; i++) {
-        int pos = categoryLevel2[i].indexOf("^^^");
-        if (pos <= 0) continue;
-        String temp = categoryLevel2[i].substring(pos + 3);
-        codeTemp2 = categoryLevel2[i].substring(0, pos);
-        if (temp == argumentSelectedCategory2) break;
-      }
-
-      selectedCategory2 = argumentSelectedCategory2;
-
-      String codeTemp3 = "";
-      for (int i = 0; i < categoryLevel3.length; i++) {
-        int pos = categoryLevel3[i].indexOf("^^^");
-        if (pos <= 0) continue;
-        String temp = categoryLevel3[i].substring(pos + 3);
-        codeTemp3 = categoryLevel3[i].substring(0, pos);
-
-        if (codeTemp3.substring(0, 6) == codeTemp2 ||
-            codeTemp3.substring(0, 6) == "000000") {
-          this.shopCategoryLevel3.add(temp);
-        }
-      }
-
-      if (this.shopCategoryLevel3.length > 0) {
-        this.dropDownCategory3 =
-            buildAndGetDropDownItems(this.shopCategoryLevel3);
-        this.selectedCategory3 = dropDownCategory3[0].value;
-      }
-    });
-  }
-
-  void changedDropDownCategory3(String argumentSelectedCategory3) {
-    setState(() {
-      selectedCategory3 = argumentSelectedCategory3;
-    });
-  }
-
-  getPhoneVisitedShop() async {
-    this.phoneShop =
-        await firebaseMethods.getPhoneVisitedShop(this.visitedShopID);
-    setState(() {});
-  }
-
-  checkIfLoggedIn() async {
-    if (this.acctEmail.contains("guest") == true) {
-      await firebaseMethods.logOutUser();
-      String response = await Navigator.of(context).push(new CupertinoPageRoute(
-          builder: (BuildContext context) => new ShopLogin()));
-      if (response.length == 3) {
-        this.visitedShopID = response;
-        writeDataLocally(key: "visitedShopID", value: this.visitedShopID);
-        await getCurrentUser();
-      } else if (response == "noShop") {
-        await getCurrentUser();
-      }
-    } else {
-      //if it's a logged in user
-      bool response = await firebaseMethods.logOutUser();
-      getCurrentUser();
-      if (response == true) {
-        //await this.retrieveShopID();
-        this.shopID = "123";
-        getCurrentUser();
-        print("Logged out!!!");
-        setState(() {});
-      }
-    }
-  }
-
-  void openAdmin() async {
-    if (this.isLoggedIn == false) {
-      showSnackBar("נא להיכנס לחשבון שלך קודם", scaffoldKey);
-      return;
-    }
-
-    List<DocumentSnapshot> snapshot =
-        await firebaseMethods.retrieveUserDetails(this.acctEmail);
-    String myShop = snapshot[0]['shopID'].toString();
-    if (myShop != "noShop") {
-      await Navigator.of(context).push(new CupertinoPageRoute(
-          builder: (BuildContext context) => new AdminHome()));
-    } else if (myShop == "noShop") {
-      showSnackBar("אין לך חנות עדיין", scaffoldKey);
-    }
-  }
-
-  retrievePrefs() async {
-    prefs = await SharedPreferences.getInstance();
-    this.cartContentsSize = prefs.getInt("cartCounter");
-
-    setState(() {});
-  }
-
   //Widgets section///////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -1163,7 +757,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-//build() section/////////////////////////////////////////////////////////////////////////////////
+//Method section/////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -1205,5 +799,411 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {});
     });
     //getCurrentUser();
+  }
+
+  switchShop(String numberShop) async {
+    int cartCounter;
+    this.categoryLevel1 = [];
+    this.categoryLevel2 = [];
+    this.categoryLevel3 = [];
+    this.shopCategoryLevel1 = [];
+    this.shopCategoryLevel2 = [];
+    this.shopCategoryLevel3 = [];
+    try {
+      cartCounter = prefs.getInt("cartCounter");
+
+      if (cartCounter == null)
+        cartCounter = 0;
+      else if (cartCounter > 0) {
+        cartCounter = 0;
+        prefs.setInt("cartCounter", 0);
+        prefs.setStringList("cartContents", []);
+      }
+    } catch (e) {
+      print("eeeeeeeeeeeee=" + e.toString());
+    }
+
+    String shopName =
+        await firebaseMethods.convertShopIDToShopName(numberShop.trim());
+
+//this.listShopName
+    this.visitedShopID = numberShop.trim();
+    var listCategories = await firebaseMethods.getCategories(visitedShopID);
+
+    for (int a = 0; a < listCategories[0].length; a++) {
+      categoryLevel1.add(listCategories[0][a].toString());
+    }
+
+    for (int a = 0; a < listCategories[1].length; a++) {
+      categoryLevel2.add(listCategories[1][a].toString());
+    }
+
+    for (int a = 0; a < listCategories[2].length; a++) {
+      categoryLevel3.add(listCategories[2][a].toString());
+    }
+
+    this.shopCategoryLevel1 = categoryLevel1;
+    this.shopCategoryLevel2 = categoryLevel2;
+    this.shopCategoryLevel3 = categoryLevel3;
+
+    this.dropDownCategory1 = buildAndGetDropDownItems(this.shopCategoryLevel1);
+
+    List<String> list1 = [];
+    for (int i = 0; i < this.shopCategoryLevel1.length; i++) {
+      String temp = this.shopCategoryLevel1[i];
+      int pos = temp.indexOf("^^^");
+      if (pos <= 0) continue;
+      temp = temp.substring(pos + 3);
+      list1.add(temp);
+    }
+
+    this.shopCategoryLevel1 = list1;
+
+    this.dropDownCategory1 = buildAndGetDropDownItems(this.shopCategoryLevel1);
+
+    this.selectedCategory1 = dropDownCategory1[0].value;
+
+    listProductsVisitedShop =
+        await firebaseMethods.retrieveVisitedShopProducts(visitedShopID);
+
+    setState(() {
+      selectedShop = shopName;
+    });
+  }
+
+  Future<void> openDialogSwitchShop() {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: Directionality(
+              textDirection: TextDirection.rtl, child: Text('מספר החנות')),
+          content: Directionality(
+            textDirection: TextDirection.rtl,
+            child: TextField(
+              controller: controllerShopNumber,
+              decoration: InputDecoration(hintText: "נא להכניס מספר חנות"),
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('ביטול'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            FlatButton(
+              child: Text('אישור'),
+              onPressed: () {
+                this.switchShop(controllerShopNumber.text);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> displayDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('נא להכניס מספר טלפון'),
+          content: TextField(
+            textDirection: TextDirection.ltr,
+            controller: controllerPhone,
+            //decoration: InputDecoration(hintText: "מספר הטלפון שלך"),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('ביטול'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            FlatButton(
+              child: Text('אישור'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  loginAsGuest() async {
+    bool response = false;
+    try {
+      response = await firebaseMethods.loginUser(
+          email: "guest@gmail.com", password: "123456");
+
+      await getCurrentUser();
+    } catch (e) {
+      response = false;
+    }
+  }
+
+  Future getCurrentUser() async {
+    isLoggedIn = await getBoolDataLocally(key: loggedIn);
+    if (isLoggedIn == true) {
+      acctAddress = await getStringDataLocally(key: address);
+      acctName = await getStringDataLocally(key: fullName);
+      acctUserID = await getStringDataLocally(key: userID);
+      acctEmail = await getStringDataLocally(key: userEmail);
+      acctPhone = await getStringDataLocally(key: userPhone);
+      acctPhotoURL = await getStringDataLocally(key: photoURL);
+      acctShopID = await getStringDataLocally(key: shopID);
+    }
+
+    acctName == null ? acctName = "אורח" : acctName = acctName;
+    acctUserID == null ? acctUserID = "" : acctUserID = acctUserID;
+    acctEmail == null ? acctEmail = "guest@gmail.com" : acctEmail = acctEmail;
+    acctPhone == null ? acctPhone = "" : acctPhone = acctPhone;
+
+    acctPhotoURL == null ? acctPhotoURL = "" : acctPhotoURL = acctPhotoURL;
+    acctShopID == null ? acctShopID = "" : acctShopID = acctShopID;
+    isLoggedIn == null ? isLoggedIn = false : isLoggedIn = true;
+
+    this.shopList = [];
+    this.listShopID = [];
+    this.listShopName = [];
+
+    if (this.visitedShopID.length != 3) this.visitedShopID = "325";
+    String shopName =
+        await firebaseMethods.convertShopIDToShopName(this.visitedShopID);
+
+    var listCategories = await firebaseMethods.getCategories(visitedShopID);
+
+    categoryLevel1 = [];
+    categoryLevel2 = [];
+    categoryLevel3 = [];
+
+    for (int a = 0; a < listCategories[0].length; a++) {
+      categoryLevel1.add(listCategories[0][a].toString());
+    }
+
+    for (int a = 0; a < listCategories[1].length; a++) {
+      categoryLevel2.add(listCategories[1][a].toString());
+    }
+
+    for (int a = 0; a < listCategories[2].length; a++) {
+      categoryLevel3.add(listCategories[2][a].toString());
+    }
+
+    this.shopCategoryLevel1 = categoryLevel1;
+    this.shopCategoryLevel2 = categoryLevel2;
+    this.shopCategoryLevel3 = categoryLevel3;
+
+    this.dropDownCategory1 = buildAndGetDropDownItems(this.shopCategoryLevel1);
+
+    List<String> list1 = [];
+    for (int i = 0; i < this.shopCategoryLevel1.length; i++) {
+      String temp = this.shopCategoryLevel1[i];
+      int pos = temp.indexOf("^^^");
+      if (pos <= 0) continue;
+      temp = temp.substring(pos + 3);
+      list1.add(temp);
+    }
+
+    this.shopCategoryLevel1 = list1;
+
+    this.dropDownCategory1 = buildAndGetDropDownItems(this.shopCategoryLevel1);
+
+    this.selectedCategory1 = dropDownCategory1[0].value;
+
+    listProductsVisitedShop =
+        await firebaseMethods.retrieveVisitedShopProducts(visitedShopID);
+
+    setState(() {
+      selectedShop = shopName;
+    });
+  }
+
+  retrieveShopList() async {
+    firebaseMethods.retrieveShopList(this.isLoggedIn);
+  }
+
+  Future retrieveShopID() async {
+    try {
+      var temp = await getStringDataLocally(key: "shopID");
+
+      if (temp.runtimeType.toString() == "String") {
+        this.shopID = temp.toString();
+        if (this.shopID == "noShop") return;
+        List<String> shopDetails =
+            await firebaseMethods.retrieveShopDetails(this.shopID);
+
+        this.selectedShop =
+            shopDetails[1].toString() != null ? shopDetails[1].toString() : "";
+
+        this.shopCategory = shopDetails[5].toString();
+        writeDataLocally(
+            key: "creditCardPayment", value: shopDetails[6].toString());
+        writeDataLocally(
+            key: "paypalPayment", value: shopDetails[7].toString());
+        if (this.shopCategory == "חומרי בניין" ||
+            this.shopCategory == "???? ????") {
+          this.shopCategoryLevel1 = shopBuildingMaterials;
+        } else if (this.shopCategory == "צעצועים ומשחקים" ||
+            this.shopCategory == "????? ????") {
+          this.shopCategoryLevel1 = shopToys;
+        }
+      } else
+        this.shopID = "";
+    } catch (e) {
+      this.shopID = "";
+    }
+    //setState(() {});
+
+    return;
+  }
+
+  void changedDropDownSubCategory(String argumentSelectedSubCategory) {
+    selectedSubCategory = argumentSelectedSubCategory;
+
+    setState(() {});
+  }
+
+  void changedDropDownCategory1(String argumentSelectedCategory1) {
+    this.selectedCategory1 = "הכל";
+    this.selectedCategory2 = "הכל";
+    this.selectedCategory3 = "הכל";
+    this.shopCategoryLevel1 = [];
+    this.shopCategoryLevel2 = [];
+    setState(() {
+      String codeTemp1 = "";
+      for (int i = 0; i < categoryLevel1.length; i++) {
+        int pos = categoryLevel1[i].indexOf("^^^");
+        if (pos <= 0) continue;
+        String temp = categoryLevel1[i].substring(pos + 3);
+        codeTemp1 = categoryLevel1[i].substring(0, pos);
+        if (temp == argumentSelectedCategory1) break;
+      }
+
+      selectedCategory1 = argumentSelectedCategory1;
+
+      String codeTemp2 = "";
+      for (int i = 0; i < categoryLevel2.length; i++) {
+        int pos = categoryLevel2[i].indexOf("^^^");
+        if (pos <= 0) continue;
+        String temp = categoryLevel2[i].substring(pos + 3);
+        codeTemp2 = categoryLevel2[i].substring(0, pos);
+
+        if (codeTemp2.substring(0, 3) == codeTemp1 ||
+            codeTemp2.substring(0, 3) == "000") {
+          this.shopCategoryLevel2.add(temp);
+        }
+      }
+
+      this.dropDownCategory2 =
+          buildAndGetDropDownItems(this.shopCategoryLevel2);
+      this.selectedCategory2 = dropDownCategory2[0].value;
+    });
+  }
+
+  void changedDropDownCategory2(String argumentSelectedCategory2) {
+    this.selectedCategory2 = "הכל";
+    this.selectedCategory3 = "הכל";
+    this.shopCategoryLevel1 = [];
+    this.shopCategoryLevel2 = [];
+    this.shopCategoryLevel3 = [];
+    setState(() {
+      String codeTemp2 = "";
+      for (int i = 0; i < categoryLevel2.length; i++) {
+        int pos = categoryLevel2[i].indexOf("^^^");
+        if (pos <= 0) continue;
+        String temp = categoryLevel2[i].substring(pos + 3);
+        codeTemp2 = categoryLevel2[i].substring(0, pos);
+        if (temp == argumentSelectedCategory2) break;
+      }
+
+      selectedCategory2 = argumentSelectedCategory2;
+
+      String codeTemp3 = "";
+      for (int i = 0; i < categoryLevel3.length; i++) {
+        int pos = categoryLevel3[i].indexOf("^^^");
+        if (pos <= 0) continue;
+        String temp = categoryLevel3[i].substring(pos + 3);
+        codeTemp3 = categoryLevel3[i].substring(0, pos);
+
+        if (codeTemp3.substring(0, 6) == codeTemp2 ||
+            codeTemp3.substring(0, 6) == "000000") {
+          this.shopCategoryLevel3.add(temp);
+        }
+      }
+
+      if (this.shopCategoryLevel3.length > 0) {
+        this.dropDownCategory3 =
+            buildAndGetDropDownItems(this.shopCategoryLevel3);
+        this.selectedCategory3 = dropDownCategory3[0].value;
+      }
+    });
+  }
+
+  void changedDropDownCategory3(String argumentSelectedCategory3) {
+    setState(() {
+      selectedCategory3 = argumentSelectedCategory3;
+    });
+  }
+
+  getPhoneVisitedShop() async {
+    this.phoneShop =
+        await firebaseMethods.getPhoneVisitedShop(this.visitedShopID);
+    setState(() {});
+  }
+
+  checkIfLoggedIn() async {
+    if (this.acctEmail.contains("guest") == true) {
+      await firebaseMethods.logOutUser();
+      String response = await Navigator.of(context).push(new CupertinoPageRoute(
+          builder: (BuildContext context) => new ShopLogin()));
+      if (response.length == 3) {
+        this.visitedShopID = response;
+        writeDataLocally(key: "visitedShopID", value: this.visitedShopID);
+        await getCurrentUser();
+      } else if (response == "noShop") {
+        await getCurrentUser();
+      }
+    } else {
+      //if it's a logged in user
+      bool response = await firebaseMethods.logOutUser();
+      getCurrentUser();
+      if (response == true) {
+        //await this.retrieveShopID();
+        this.shopID = "123";
+        getCurrentUser();
+        print("Logged out!!!");
+        setState(() {});
+      }
+    }
+  }
+
+  void openAdmin() async {
+    if (this.isLoggedIn == false) {
+      showSnackBar("נא להיכנס לחשבון שלך קודם", scaffoldKey);
+      return;
+    }
+
+    List<DocumentSnapshot> snapshot =
+        await firebaseMethods.retrieveUserDetails(this.acctEmail);
+    String myShop = snapshot[0]['shopID'].toString();
+    if (myShop != "noShop") {
+      await Navigator.of(context).push(new CupertinoPageRoute(
+          builder: (BuildContext context) => new AdminHome()));
+    } else if (myShop == "noShop") {
+      showSnackBar("אין לך חנות עדיין", scaffoldKey);
+    }
+  }
+
+  retrievePrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    this.cartContentsSize = prefs.getInt("cartCounter");
+
+    setState(() {});
   }
 }

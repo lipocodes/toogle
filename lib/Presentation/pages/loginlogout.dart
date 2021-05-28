@@ -18,6 +18,51 @@ class _ShopLoginState extends State<ShopLogin> {
   BuildContext context;
   FirebaseMethods firebaseMethod = new FirebaseMethods();
 
+//Widget section/////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+  Widget customBody() {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: new SingleChildScrollView(
+        child: new Column(
+          children: <Widget>[
+            new SizedBox(height: 30.0),
+            appTextField(
+                isPassword: false,
+                sidePadding: 18.0,
+                textHint: "דואר אלקטרוני",
+                textIcon: new Icon(Icons.email),
+                controller: email),
+            new SizedBox(height: 30.0),
+            appTextField(
+                isPassword: true,
+                sidePadding: 18.0,
+                textHint: "סיסמא",
+                textIcon: new Icon(Icons.lock),
+                controller: password),
+            new SizedBox(height: 10.0),
+            appButton(
+                btnTxt: "כניסה",
+                btnPadding: 20.0,
+                btnColor: Theme.of(context).primaryColor,
+                onBtnclicked: verifyLogin),
+            new SizedBox(height: 10.0),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                    new MaterialPageRoute(builder: (context) => Signup()));
+              },
+              child: new Text("עדיין לא רשום? לחץ כאן",
+                  style: new TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+//method section////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
   @override
   Widget build(BuildContext context) {
     this.context = context;
@@ -32,44 +77,7 @@ class _ShopLoginState extends State<ShopLogin> {
         centerTitle: false,
         elevation: 0.0,
       ),
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: new SingleChildScrollView(
-          child: new Column(
-            children: <Widget>[
-              new SizedBox(height: 30.0),
-              appTextField(
-                  isPassword: false,
-                  sidePadding: 18.0,
-                  textHint: "דואר אלקטרוני",
-                  textIcon: new Icon(Icons.email),
-                  controller: email),
-              new SizedBox(height: 30.0),
-              appTextField(
-                  isPassword: true,
-                  sidePadding: 18.0,
-                  textHint: "סיסמא",
-                  textIcon: new Icon(Icons.lock),
-                  controller: password),
-              new SizedBox(height: 10.0),
-              appButton(
-                  btnTxt: "כניסה",
-                  btnPadding: 20.0,
-                  btnColor: Theme.of(context).primaryColor,
-                  onBtnclicked: verifyLogin),
-              new SizedBox(height: 10.0),
-              GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                      new MaterialPageRoute(builder: (context) => Signup()));
-                },
-                child: new Text("עדיין לא רשום? לחץ כאן",
-                    style: new TextStyle(color: Colors.white)),
-              ),
-            ],
-          ),
-        ),
-      ),
+      body: customBody(),
     );
   }
 

@@ -20,6 +20,86 @@ class _SignupState extends State<Signup> {
   BuildContext context;
   FirebaseMethods firebaseMethod = new FirebaseMethods();
 
+  //Widget section //////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  Widget customAppBar() {
+    return AppBar(
+      title: new Text(
+        "הרשמה",
+      ),
+      centerTitle: false,
+      elevation: 0.0,
+    );
+  }
+
+  Widget customBody() {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: new SingleChildScrollView(
+        child: new Column(
+          children: <Widget>[
+            new SizedBox(height: 30.0),
+            appTextField(
+                isPassword: false,
+                sidePadding: 18.0,
+                textHint: "שם מלא",
+                textIcon: new Icon(Icons.person),
+                controller: fullName,
+                textType: TextInputType.text),
+            new SizedBox(height: 30.0),
+            appTextField(
+                isPassword: false,
+                sidePadding: 18.0,
+                textHint: "כתובת מלאה",
+                textIcon: new Icon(Icons.home),
+                controller: fullAddress,
+                textType: TextInputType.text),
+            new SizedBox(height: 30.0),
+            appTextField(
+                isPassword: false,
+                sidePadding: 18.0,
+                textHint: "מספר טלפון",
+                textIcon: new Icon(Icons.phone),
+                controller: phoneNumber,
+                textType: TextInputType.phone),
+            new SizedBox(height: 30.0),
+            appTextField(
+                isPassword: false,
+                sidePadding: 18.0,
+                textHint: "דואר אלקטרוני",
+                textIcon: new Icon(Icons.email),
+                controller: email,
+                textType: TextInputType.emailAddress),
+            new SizedBox(height: 30.0),
+            appTextField(
+                isPassword: true,
+                sidePadding: 18.0,
+                textHint: "סיסמא",
+                textIcon: new Icon(Icons.lock),
+                controller: password,
+                textType: TextInputType.text),
+            new SizedBox(height: 30.0),
+            appTextField(
+                isPassword: true,
+                sidePadding: 18.0,
+                textHint: "סיסמא שוב",
+                textIcon: new Icon(Icons.lock),
+                controller: repeatPassword,
+                textType: TextInputType.text),
+            new SizedBox(height: 10.0),
+            appButton(
+                btnTxt: "צור חשבון חדש",
+                btnPadding: 20.0,
+                btnColor: Theme.of(context).primaryColor,
+                onBtnclicked: verifyDetails),
+          ],
+        ),
+      ),
+    );
+  }
+
+  //Method section ////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////
   @override
   Widget build(BuildContext context) {
     this.context = context;
@@ -27,76 +107,8 @@ class _SignupState extends State<Signup> {
     return new Scaffold(
       key: scaffoldKey,
       backgroundColor: Theme.of(context).primaryColor,
-      appBar: AppBar(
-        title: new Text(
-          "הרשמה",
-        ),
-        centerTitle: false,
-        elevation: 0.0,
-      ),
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: new SingleChildScrollView(
-          child: new Column(
-            children: <Widget>[
-              new SizedBox(height: 30.0),
-              appTextField(
-                  isPassword: false,
-                  sidePadding: 18.0,
-                  textHint: "שם מלא",
-                  textIcon: new Icon(Icons.person),
-                  controller: fullName,
-                  textType: TextInputType.text),
-              new SizedBox(height: 30.0),
-              appTextField(
-                  isPassword: false,
-                  sidePadding: 18.0,
-                  textHint: "כתובת מלאה",
-                  textIcon: new Icon(Icons.home),
-                  controller: fullAddress,
-                  textType: TextInputType.text),
-              new SizedBox(height: 30.0),
-              appTextField(
-                  isPassword: false,
-                  sidePadding: 18.0,
-                  textHint: "מספר טלפון",
-                  textIcon: new Icon(Icons.phone),
-                  controller: phoneNumber,
-                  textType: TextInputType.phone),
-              new SizedBox(height: 30.0),
-              appTextField(
-                  isPassword: false,
-                  sidePadding: 18.0,
-                  textHint: "דואר אלקטרוני",
-                  textIcon: new Icon(Icons.email),
-                  controller: email,
-                  textType: TextInputType.emailAddress),
-              new SizedBox(height: 30.0),
-              appTextField(
-                  isPassword: true,
-                  sidePadding: 18.0,
-                  textHint: "סיסמא",
-                  textIcon: new Icon(Icons.lock),
-                  controller: password,
-                  textType: TextInputType.text),
-              new SizedBox(height: 30.0),
-              appTextField(
-                  isPassword: true,
-                  sidePadding: 18.0,
-                  textHint: "סיסמא שוב",
-                  textIcon: new Icon(Icons.lock),
-                  controller: repeatPassword,
-                  textType: TextInputType.text),
-              new SizedBox(height: 10.0),
-              appButton(
-                  btnTxt: "צור חשבון חדש",
-                  btnPadding: 20.0,
-                  btnColor: Theme.of(context).primaryColor,
-                  onBtnclicked: verifyDetails),
-            ],
-          ),
-        ),
-      ),
+      appBar: customAppBar(),
+      body: customBody(),
     );
   }
 

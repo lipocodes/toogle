@@ -36,6 +36,374 @@ class _AppOrdersState extends State<AppOrders> {
   String clientId = "";
   List<String> paymentMethods = [];
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    this.selectedStatus = [];
+    retrieveOrders();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (this.listAllOrders == null || this.statusList == null)
+      return Container();
+
+    if (this.dropDownStatus == null) {
+      this.dropDownStatus = buildAndGetDropDownItems(this.statusList);
+    }
+    this.dropDownStatus = buildAndGetDropDownItems(statusList);
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: new Scaffold(
+          key: scaffoldKey,
+          backgroundColor: Theme.of(context).primaryColor,
+          appBar: customAppBar(),
+          body: customBody()),
+    );
+  }
+
+  //Widget section/////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  Widget customAppBar() {
+    return AppBar(
+      title: new Text(
+        "הזמנות",
+      ),
+      centerTitle: false,
+    );
+  }
+
+  Widget customBody() {
+    return ListView.separated(
+      reverse: true,
+      separatorBuilder: (context, index) => Divider(
+        color: Colors.transparent,
+      ),
+      itemCount: this.listAllOrders.length,
+      itemBuilder: (context, index) => Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(
+                        "פרטי הלקוח",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      FlatButton(
+                        child: Text('X',
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.w900)),
+                        onPressed: () {
+                          removeOrder(index);
+                        },
+                      ),
+                    ],
+                  ),
+                  productsDropDown(
+                      textTitle: "Item Status",
+                      selectedItem: this.selectedStatus[index],
+                      dropDownItems: this.dropDownStatus,
+                      changedDropDownItems: (r) {
+                        changedDropDownOrderStatus(r, index);
+                      }),
+                  Row(
+                    children: [
+                      Text("מספר הזמנה",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w400)),
+                      SizedBox(width: 20),
+                      Text(this.orderID[index],
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w400)),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.payment),
+                      if (this.paymentMethods[index] == "Phone")
+                        Text("טלפון",
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.red)),
+                      if (this.paymentMethods[index] == "Paypal")
+                        Text("פייפאל",
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.red)),
+                      if (this.paymentMethods[index] == "CreditCards")
+                        Text("כרטיס אשראי",
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.red))
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.date_range),
+                      Text(this.dateOrders[index],
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w400)),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.person),
+                      Text(this.listAllClients[index][0],
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w400)),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.email),
+                      Text(
+                        this.listAllClients[index][1],
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      String num = this.listAllClients[index][2];
+                      String url = "tel:" + num;
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.phone),
+                        Text(
+                          this.listAllClients[index][2],
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            String num = "+972" +
+                                this.listAllClients[index][2].substring(1);
+                            var whatsappUrl = "whatsapp://send?phone=$num";
+                            await canLaunch(whatsappUrl)
+                                ? launch(whatsappUrl)
+                                : print(
+                                    "Whatsapp is not installed on this device!!!!!!");
+                          },
+                          child: Row(
+                            children: [
+                              IconButton(
+                                  icon: FaIcon(FontAwesomeIcons.whatsapp),
+                                  onPressed: () {
+                                    //print("Pressed");
+                                  }),
+                              Text(
+                                "972" +
+                                    this.listAllClients[index][2].substring(1),
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                ],
+              ),
+              for (int i = 0; i < listAllOrders[index].length; i++) ...[
+                Row(
+                  children: [
+                    Text(
+                      "פריט מספר" + " " + (i + 1).toString(),
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    //Icon(Icons.shopping_cart),
+                    Text(
+                      "קוד:",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                    ),
+                    SizedBox(width: 20),
+                    Text(
+                      retrieveOrderDetails(index, i)[1],
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.blueAccent),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    //Icon(Icons.reorder),
+                    Text(
+                      "שם:",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                    ),
+                    SizedBox(width: 20),
+                    Text(
+                      retrieveOrderDetails(index, i)[2],
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.blueAccent),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    //Icon(Icons.add_shopping_cart),
+                    Text(
+                      "מחיר המוצר",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                    ),
+                    SizedBox(width: 20),
+
+                    Text(
+                      retrieveOrderDetails(index, i)[5] + ' ש"ח',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.blueAccent),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    //Icon(Icons.attach_money),
+                    Text(
+                      "מספר פריטים",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                    ),
+                    SizedBox(width: 20),
+                    Text(
+                      retrieveOrderDetails(index, i)[3],
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.blueAccent),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    //Icon(Icons.attach_money),
+                    Text(
+                      "הערות",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                    ),
+                    SizedBox(width: 20),
+                    Text(
+                      retrieveOrderDetails(index, i)[4],
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.blueAccent),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text("משקל:",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w400)),
+                    SizedBox(width: 20),
+                    Text(
+                      retrieveOrderDetails(index, i)[6],
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.blueAccent),
+                    ),
+                    Text(" ק'ג",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.blueAccent)),
+                    SizedBox(width: 10),
+                    Text(
+                      "  ו " + retrieveOrderDetails(index, i)[7],
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.blueAccent),
+                    ),
+                    SizedBox(width: 10),
+                    Text("גרם",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.blueAccent)),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  //Method section //////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
   getItemStatus(index, i) {
     List<String> list = this.listAllOrders[index];
     List<String> splitList = list[i].split("^^^");
@@ -208,365 +576,6 @@ class _AppOrdersState extends State<AppOrders> {
       builder: (BuildContext context) {
         return alert;
       },
-    );
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    this.selectedStatus = [];
-    retrieveOrders();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (this.listAllOrders == null || this.statusList == null)
-      return Container();
-
-    if (this.dropDownStatus == null) {
-      this.dropDownStatus = buildAndGetDropDownItems(this.statusList);
-    }
-    this.dropDownStatus = buildAndGetDropDownItems(statusList);
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: new Scaffold(
-        key: scaffoldKey,
-        backgroundColor: Theme.of(context).primaryColor,
-        appBar: AppBar(
-          title: new Text(
-            "הזמנות",
-          ),
-          centerTitle: false,
-        ),
-        body: ListView.separated(
-          reverse: true,
-          separatorBuilder: (context, index) => Divider(
-            color: Colors.transparent,
-          ),
-          itemCount: this.listAllOrders.length,
-          itemBuilder: (context, index) => Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Container(
-              color: Colors.white,
-              child: Column(
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(
-                            "פרטי הלקוח",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w800,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                          FlatButton(
-                            child: Text('X',
-                                style: TextStyle(
-                                    fontSize: 22, fontWeight: FontWeight.w900)),
-                            onPressed: () {
-                              removeOrder(index);
-                            },
-                          ),
-                        ],
-                      ),
-                      productsDropDown(
-                          textTitle: "Item Status",
-                          selectedItem: this.selectedStatus[index],
-                          dropDownItems: this.dropDownStatus,
-                          changedDropDownItems: (r) {
-                            changedDropDownOrderStatus(r, index);
-                          }),
-                      Row(
-                        children: [
-                          Text("מספר הזמנה",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w400)),
-                          SizedBox(width: 20),
-                          Text(this.orderID[index],
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w400)),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.payment),
-                          if (this.paymentMethods[index] == "Phone")
-                            Text("טלפון",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.red)),
-                          if (this.paymentMethods[index] == "Paypal")
-                            Text("פייפאל",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.red)),
-                          if (this.paymentMethods[index] == "CreditCards")
-                            Text("כרטיס אשראי",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.red))
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.date_range),
-                          Text(this.dateOrders[index],
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w400)),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.person),
-                          Text(this.listAllClients[index][0],
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w400)),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.email),
-                          Text(
-                            this.listAllClients[index][1],
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w400),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      GestureDetector(
-                        onTap: () async {
-                          String num = this.listAllClients[index][2];
-                          String url = "tel:" + num;
-                          if (await canLaunch(url)) {
-                            await launch(url);
-                          } else {
-                            throw 'Could not launch $url';
-                          }
-                        },
-                        child: Row(
-                          children: [
-                            Icon(Icons.phone),
-                            Text(
-                              this.listAllClients[index][2],
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.blue,
-                                  decoration: TextDecoration.underline),
-                            ),
-                            GestureDetector(
-                              onTap: () async {
-                                String num = "+972" +
-                                    this.listAllClients[index][2].substring(1);
-                                var whatsappUrl = "whatsapp://send?phone=$num";
-                                await canLaunch(whatsappUrl)
-                                    ? launch(whatsappUrl)
-                                    : print(
-                                        "Whatsapp is not installed on this device!!!!!!");
-                              },
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                      icon: FaIcon(FontAwesomeIcons.whatsapp),
-                                      onPressed: () {
-                                        //print("Pressed");
-                                      }),
-                                  Text(
-                                    "972" +
-                                        this
-                                            .listAllClients[index][2]
-                                            .substring(1),
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.blue,
-                                        decoration: TextDecoration.underline),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                    ],
-                  ),
-                  for (int i = 0; i < listAllOrders[index].length; i++) ...[
-                    Row(
-                      children: [
-                        Text(
-                          "פריט מספר" + " " + (i + 1).toString(),
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w800,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        //Icon(Icons.shopping_cart),
-                        Text(
-                          "קוד:",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w400),
-                        ),
-                        SizedBox(width: 20),
-                        Text(
-                          retrieveOrderDetails(index, i)[1],
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.blueAccent),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        //Icon(Icons.reorder),
-                        Text(
-                          "שם:",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w400),
-                        ),
-                        SizedBox(width: 20),
-                        Text(
-                          retrieveOrderDetails(index, i)[2],
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.blueAccent),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        //Icon(Icons.add_shopping_cart),
-                        Text(
-                          "מחיר המוצר",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w400),
-                        ),
-                        SizedBox(width: 20),
-
-                        Text(
-                          retrieveOrderDetails(index, i)[5] + ' ש"ח',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.blueAccent),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        //Icon(Icons.attach_money),
-                        Text(
-                          "מספר פריטים",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w400),
-                        ),
-                        SizedBox(width: 20),
-                        Text(
-                          retrieveOrderDetails(index, i)[3],
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.blueAccent),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        //Icon(Icons.attach_money),
-                        Text(
-                          "הערות",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w400),
-                        ),
-                        SizedBox(width: 20),
-                        Text(
-                          retrieveOrderDetails(index, i)[4],
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.blueAccent),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text("משקל:",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w400)),
-                        SizedBox(width: 20),
-                        Text(
-                          retrieveOrderDetails(index, i)[6],
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.blueAccent),
-                        ),
-                        Text(" ק'ג",
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.blueAccent)),
-                        SizedBox(width: 10),
-                        Text(
-                          "  ו " + retrieveOrderDetails(index, i)[7],
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.blueAccent),
-                        ),
-                        SizedBox(width: 10),
-                        Text("גרם",
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.blueAccent)),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

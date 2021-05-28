@@ -69,6 +69,185 @@ class _ShopCartState extends State<ShopCart> {
   final controllerLocation = TextEditingController();
   final controllerPhone = TextEditingController();
 
+  //Widget section ////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  Widget customAppBar() {
+    return AppBar(
+      title: new Text(
+        "עגלת קניות",
+      ),
+      centerTitle: false,
+    );
+  }
+
+  Widget customBody() {
+    return new Column(
+      children: [
+        new Expanded(
+            child: new ListView.builder(
+                itemCount: itemName.length,
+                itemBuilder: (BuildContext ctxt, int index) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                      color: Colors.grey[500],
+                      width: 8.0,
+                    ))),
+                    child: new Column(
+                      children: [
+                        new Row(
+                          children: [
+                            new SizedBox(width: 10.0),
+                            new Image.network(itemImage[index],
+                                width: 100, height: 100),
+                            new SizedBox(width: 30.0),
+                            Expanded(
+                                child: new Text(
+                              itemName[index].length < 50
+                                  ? itemName[index]
+                                  : itemName[index].substring(0, 50),
+                              style: new TextStyle(
+                                  fontSize: 18.0, color: Colors.grey[800]),
+                            )),
+                            GestureDetector(
+                              onTap: () {
+                                removeItem(index);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 10.0, right: 10.0),
+                                child: new Text(
+                                  'מחיקה',
+                                  style: new TextStyle(
+                                      fontSize: 18.0,
+                                      backgroundColor: Colors.grey),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (itemWeightKilos[index] != '0' ||
+                            itemWeightGrams[index] != '0') ...[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              new Text(
+                                "משקל:" +
+                                    "   " +
+                                    itemWeightKilos[index] +
+                                    " " +
+                                    "ק'ג" +
+                                    "  " +
+                                    itemWeightGrams[index] +
+                                    " " +
+                                    "גרם" +
+                                    " " +
+                                    "     מחיר: " +
+                                    this.itemPrice[index] +
+                                    " " +
+                                    "שקלים",
+                                style: new TextStyle(
+                                    fontSize: 16.0,
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            ],
+                          ),
+                          Row(children: []),
+                        ] else ...[
+                          Row(
+                            children: [
+                              Text("מספר פריטים:" + " " + itemQuantity[index],
+                                  style: new TextStyle(
+                                      fontSize: 18.0,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w800)),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                  "מחיר: " +
+                                      this.itemPrice[index] +
+                                      " " +
+                                      "שקלים",
+                                  style: new TextStyle(
+                                      fontSize: 18.0,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w800)),
+                            ],
+                          ),
+                        ],
+                        SizedBox(height: 10),
+                        Text(this.itemRemarks[index]),
+                      ],
+                    ),
+                  );
+                })),
+        SizedBox(height: 30.0),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "סכום לתשלום",
+                style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.grey[800]),
+              ),
+              Text(totalSum.toStringAsFixed(2) + " " + "ש'ח",
+                  style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey[800])),
+            ],
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            RaisedButton(
+                onPressed: onPressedContinue,
+                child: Text(
+                  /*cartContinueButton*/ "לתשלום",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.w300),
+                ),
+                color: Colors.blue),
+          ],
+        ),
+      ],
+    );
+  }
+
+  //Method section ///////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    retrieveCartContents();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: new Scaffold(
+        key: scaffoldKey,
+        appBar: customAppBar(),
+        body: customBody(),
+      ),
+    );
+  }
+
   //pull what is in the shopping cart (preference) into a list
   void retrieveCartContents() async {
     //retrieve the existing preference of items in  the cart
@@ -391,180 +570,5 @@ class _ShopCartState extends State<ShopCart> {
     if (this.cartContents.length == 0) return;
 
     _showMaterialDialog();
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    retrieveCartContents();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    /*if (this.paypal == null || this.creditCards == null) {
-      return Container();
-    }*/
-
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: new Scaffold(
-        key: scaffoldKey,
-        appBar: AppBar(
-          title: new Text(
-            "עגלת קניות",
-          ),
-          centerTitle: false,
-        ),
-        body: new Column(
-          children: [
-            new Expanded(
-                child: new ListView.builder(
-                    itemCount: itemName.length,
-                    itemBuilder: (BuildContext ctxt, int index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                          color: Colors.grey[500],
-                          width: 8.0,
-                        ))),
-                        child: new Column(
-                          children: [
-                            new Row(
-                              children: [
-                                new SizedBox(width: 10.0),
-                                new Image.network(itemImage[index],
-                                    width: 100, height: 100),
-                                new SizedBox(width: 30.0),
-                                Expanded(
-                                    child: new Text(
-                                  itemName[index].length < 50
-                                      ? itemName[index]
-                                      : itemName[index].substring(0, 50),
-                                  style: new TextStyle(
-                                      fontSize: 18.0, color: Colors.grey[800]),
-                                )),
-                                GestureDetector(
-                                  onTap: () {
-                                    removeItem(index);
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10.0, right: 10.0),
-                                    child: new Text(
-                                      'מחיקה',
-                                      style: new TextStyle(
-                                          fontSize: 18.0,
-                                          backgroundColor: Colors.grey),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            if (itemWeightKilos[index] != '0' ||
-                                itemWeightGrams[index] != '0') ...[
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  new Text(
-                                    "משקל:" +
-                                        "   " +
-                                        itemWeightKilos[index] +
-                                        " " +
-                                        "ק'ג" +
-                                        "  " +
-                                        itemWeightGrams[index] +
-                                        " " +
-                                        "גרם" +
-                                        " " +
-                                        "     מחיר: " +
-                                        this.itemPrice[index] +
-                                        " " +
-                                        "שקלים",
-                                    style: new TextStyle(
-                                        fontSize: 16.0,
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ],
-                              ),
-                              Row(children: []),
-                            ] else ...[
-                              Row(
-                                children: [
-                                  Text(
-                                      "מספר פריטים:" +
-                                          " " +
-                                          itemQuantity[index],
-                                      style: new TextStyle(
-                                          fontSize: 18.0,
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.w800)),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                      "מחיר: " +
-                                          this.itemPrice[index] +
-                                          " " +
-                                          "שקלים",
-                                      style: new TextStyle(
-                                          fontSize: 18.0,
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.w800)),
-                                ],
-                              ),
-                            ],
-                            SizedBox(height: 10),
-                            Text(this.itemRemarks[index]),
-                          ],
-                        ),
-                      );
-                    })),
-            SizedBox(height: 30.0),
-            Padding(
-              padding:
-                  const EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "סכום לתשלום",
-                    style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.grey[800]),
-                  ),
-                  Text(totalSum.toStringAsFixed(2) + " " + "ש'ח",
-                      style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.grey[800])),
-                ],
-              ),
-            ),
-            SizedBox(height: 10.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                RaisedButton(
-                    onPressed: onPressedContinue,
-                    child: Text(
-                      /*cartContinueButton*/ "לתשלום",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.w300),
-                    ),
-                    color: Colors.blue),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

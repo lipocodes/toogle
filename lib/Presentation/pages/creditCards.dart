@@ -34,20 +34,80 @@ class _CreditCardsState extends State<CreditCards> {
   List<String> itemWeightGrams = [];
   String orderID = "";
 
-  retrieveCartContent() async {
-    prefs = await SharedPreferences.getInstance();
-    this.creditCards = prefs.getString("creditCards");
-    this.cartContents = prefs.getStringList("cartContents");
-    for (int i = 0; i < this.cartContents.length; i++) {
-      List<String> temp = this.cartContents[i].split("^^^");
-      this.itemNames.add(temp[2]);
-      this.amounts.add(temp[3]);
-      this.quantities.add(temp[4]);
-      this.remarks.add(temp[4]);
-    }
-    setState(() {});
+  //Widget section ///////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
+  Widget customAppBar() {
+    return AppBar(
+      title: new Text(
+        "כרטיסי אשראי",
+      ),
+      centerTitle: false,
+    );
   }
 
+  Widget customBody(String params) {
+    return WebView(
+      initialUrl: "https://shopping-il.com/creditCardPayment.php?" + params,
+      javascriptMode: JavascriptMode.unrestricted,
+      onWebViewCreated: (WebViewController webViewController) async {
+        //_controller.complete(webViewController);
+        var url = await webViewController.currentUrl();
+      },
+      onPageStarted: (String url) {
+        if (url.contains('paymentSuccessful')) {
+          Future.delayed(const Duration(milliseconds: 3000), () {
+            Navigator.pop(context);
+          });
+        }
+      },
+      onPageFinished: (String url) async {
+        if (url.contains("paymentSuccessful.php")) {
+          timeNow = new DateTime.now().microsecondsSinceEpoch;
+          for (int i = 0; i < this.cartContents.length; i++) {
+            List<String> list = this.cartContents[i].split("^^^");
+            this.itemClientId.add(list[0]);
+            this.itemId.add(list[1]);
+            this.itemName.add(list[2]);
+            this.itemPrice.add(list[3]);
+            this.itemQuantity.add(list[4]);
+            this.itemRemarks.add(list[5]);
+            //this.itemStatus.add(list[6]);
+            this.itemWeightKilos.add(list[8]);
+            this.itemWeightGrams.add(list[9]);
+          }
+
+          String fullName = prefs.getString("fullName");
+          String location = prefs.getString("location");
+          String phone = prefs.getString("phone");
+          FirebaseMethods firebaseMethods = new FirebaseMethods();
+
+          String orderID = randomBetween(100000, 200000).toString();
+          await firebaseMethods.addNewGuestOrder(
+            "CreditCard",
+            orderID,
+            itemClientId,
+            fullName,
+            location,
+            phone,
+            itemId,
+            itemName,
+            itemQuantity,
+            itemRemarks,
+            itemPrice,
+            itemStatus,
+            itemWeightKilos,
+            itemWeightGrams,
+          );
+
+          prefs.setStringList('cartContents', []);
+          prefs.setInt("cartCounter", 0);
+        }
+      },
+    );
+  }
+
+  //Method section ///////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////
   @override
   void initState() {
     // TODO: implement initState
@@ -86,74 +146,25 @@ class _CreditCardsState extends State<CreditCards> {
       String params = param1 + param2 + param3 + param4 + param5;
 
       return Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-            appBar: AppBar(
-              title: new Text(
-                "כרטיסי אשראי",
-              ),
-              centerTitle: false,
-            ),
-            body: WebView(
-              initialUrl:
-                  "https://shopping-il.com/creditCardPayment.php?" + params,
-              javascriptMode: JavascriptMode.unrestricted,
-              onWebViewCreated: (WebViewController webViewController) async {
-                //_controller.complete(webViewController);
-                var url = await webViewController.currentUrl();
-              },
-              onPageStarted: (String url) {
-                if (url.contains('paymentSuccessful')) {
-                  Future.delayed(const Duration(milliseconds: 3000), () {
-                    Navigator.pop(context);
-                  });
-                }
-              },
-              onPageFinished: (String url) async {
-                if (url.contains("paymentSuccessful.php")) {
-                  timeNow = new DateTime.now().microsecondsSinceEpoch;
-                  for (int i = 0; i < this.cartContents.length; i++) {
-                    List<String> list = this.cartContents[i].split("^^^");
-                    this.itemClientId.add(list[0]);
-                    this.itemId.add(list[1]);
-                    this.itemName.add(list[2]);
-                    this.itemPrice.add(list[3]);
-                    this.itemQuantity.add(list[4]);
-                    this.itemRemarks.add(list[5]);
-                    //this.itemStatus.add(list[6]);
-                    this.itemWeightKilos.add(list[8]);
-                    this.itemWeightGrams.add(list[9]);
-                  }
-
-                  String fullName = prefs.getString("fullName");
-                  String location = prefs.getString("location");
-                  String phone = prefs.getString("phone");
-                  FirebaseMethods firebaseMethods = new FirebaseMethods();
-
-                  String orderID = randomBetween(100000, 200000).toString();
-                  await firebaseMethods.addNewGuestOrder(
-                    "CreditCard",
-                    orderID,
-                    itemClientId,
-                    fullName,
-                    location,
-                    phone,
-                    itemId,
-                    itemName,
-                    itemQuantity,
-                    itemRemarks,
-                    itemPrice,
-                    itemStatus,
-                    itemWeightKilos,
-                    itemWeightGrams,
-                  );
-
-                  prefs.setStringList('cartContents', []);
-                  prefs.setInt("cartCounter", 0);
-                }
-              },
-            )),
-      );
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            appBar: customAppBar(),
+            body: customBody(params),
+          ));
     }
+  }
+
+  retrieveCartContent() async {
+    prefs = await SharedPreferences.getInstance();
+    this.creditCards = prefs.getString("creditCards");
+    this.cartContents = prefs.getStringList("cartContents");
+    for (int i = 0; i < this.cartContents.length; i++) {
+      List<String> temp = this.cartContents[i].split("^^^");
+      this.itemNames.add(temp[2]);
+      this.amounts.add(temp[3]);
+      this.quantities.add(temp[4]);
+      this.remarks.add(temp[4]);
+    }
+    setState(() {});
   }
 }

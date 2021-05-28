@@ -83,6 +83,139 @@ class _AddProductsState extends State<AddProducts> {
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    colorList = localColors;
+
+    retrieveSubcategories();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: new Scaffold(
+        key: scaffoldKey,
+        backgroundColor: Theme.of(context).primaryColor,
+        appBar: customAppBar(),
+        body: customBody(),
+      ),
+    );
+  }
+
+  //Widget section///////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  Widget customAppBar() {
+    return AppBar(
+      title: new Text("הוספת מוצרים"),
+      centerTitle: false,
+      elevation: 0.0,
+      actions: <Widget>[
+        new Padding(
+          padding: EdgeInsets.only(top: 10.0, right: 12.0, bottom: 10.0),
+          child: new RaisedButton.icon(
+            color: Colors.green,
+            shape: new RoundedRectangleBorder(
+              borderRadius: new BorderRadius.all(new Radius.circular(15.0)),
+            ),
+            onPressed: () {
+              pickImage();
+            },
+            icon: Icon(Icons.add, color: Colors.white),
+            label: Text(
+              "הוספת תמונות",
+              style: new TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget customBody() {
+    return new SingleChildScrollView(
+      child: new Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          new SizedBox(
+            height: 10.0,
+          ),
+          multiImageList(
+              imageList: imageList,
+              removeNewImage: (index) {
+                removeImage(index);
+              }),
+          new SizedBox(
+            height: 10.0,
+          ),
+          productTextField(
+              maxLines: 1,
+              textTitle: "שם המוצר",
+              textHint: "שם המוצר",
+              textType: TextInputType.text,
+              controller: productTitleController),
+          productTextField(
+              textTitle: "מחיר המוצר",
+              textHint: "מחיר המוצר",
+              textType: TextInputType.number,
+              controller: productPriceController),
+          productTextField(
+              textTitle: "תאור המוצר",
+              textHint: "תאור המוצר",
+              height: 180.0,
+              textType: TextInputType.text,
+              controller: productDescriptionController,
+              maxLines: 4),
+          SizedBox(height: 10.0),
+          productsDropDown(
+              textTitle: " קטגוריה ראשית",
+              selectedItem: selectedCategory1,
+              dropDownItems: dropDownCategory1,
+              changedDropDownItems: changedDropDownCategory1),
+          productsDropDown(
+              textTitle: "קטגוריה משנית",
+              selectedItem: selectedCategory2,
+              dropDownItems: dropDownCategory2,
+              changedDropDownItems: changedDropDownCategory2),
+          productsDropDown(
+              textTitle: "קטגוריה משנית משנית",
+              selectedItem: selectedCategory3,
+              dropDownItems: dropDownCategory3,
+              changedDropDownItems: changedDropDownCategory3),
+          SizedBox(height: 10.0),
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                productsDropDown(
+                    textTitle: "משקל בק'ג",
+                    selectedItem: selectedWeightKilos,
+                    dropDownItems: dropDownWeightKilos,
+                    changedDropDownItems: changedDropDownWeightKilos),
+                productsDropDown(
+                    textTitle: "משקל בגרם",
+                    selectedItem: selectedWeightGrams,
+                    dropDownItems: dropDownWeightGrams,
+                    changedDropDownItems: changedDropDownWeightGrams),
+              ],
+            ),
+          ),
+          new SizedBox(height: 20.0),
+          appButton(
+              btnTxt: "אישור",
+              btnPadding: 20.0,
+              btnColor: Theme.of(context).primaryColor,
+              onBtnclicked: () => addNewProducts()),
+        ],
+      ),
+    );
+  }
+
+  //Method section//////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
   void changedDropDownColor(String argumentSelectedColor) {
     setState(() {
       selectedColor = argumentSelectedColor;
@@ -442,126 +575,5 @@ class _AddProductsState extends State<AddProducts> {
         buildAndGetDropDownItems(this.categoryWeightKilos);
 
     setState(() {});
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    colorList = localColors;
-
-    retrieveSubcategories();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: new Scaffold(
-        key: scaffoldKey,
-        backgroundColor: Theme.of(context).primaryColor,
-        appBar: AppBar(
-          title: new Text("הוספת מוצרים"),
-          centerTitle: false,
-          elevation: 0.0,
-          actions: <Widget>[
-            new Padding(
-              padding: EdgeInsets.only(top: 10.0, right: 12.0, bottom: 10.0),
-              child: new RaisedButton.icon(
-                color: Colors.green,
-                shape: new RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.all(new Radius.circular(15.0)),
-                ),
-                onPressed: () {
-                  pickImage();
-                },
-                icon: Icon(Icons.add, color: Colors.white),
-                label: Text(
-                  "הוספת תמונות",
-                  style: new TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ],
-        ),
-        body: new SingleChildScrollView(
-          child: new Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              new SizedBox(
-                height: 10.0,
-              ),
-              multiImageList(
-                  imageList: imageList,
-                  removeNewImage: (index) {
-                    removeImage(index);
-                  }),
-              new SizedBox(
-                height: 10.0,
-              ),
-              productTextField(
-                  maxLines: 1,
-                  textTitle: "שם המוצר",
-                  textHint: "שם המוצר",
-                  textType: TextInputType.text,
-                  controller: productTitleController),
-              productTextField(
-                  textTitle: "מחיר המוצר",
-                  textHint: "מחיר המוצר",
-                  textType: TextInputType.number,
-                  controller: productPriceController),
-              productTextField(
-                  textTitle: "תאור המוצר",
-                  textHint: "תאור המוצר",
-                  height: 180.0,
-                  textType: TextInputType.text,
-                  controller: productDescriptionController,
-                  maxLines: 4),
-              SizedBox(height: 10.0),
-              productsDropDown(
-                  textTitle: " קטגוריה ראשית",
-                  selectedItem: selectedCategory1,
-                  dropDownItems: dropDownCategory1,
-                  changedDropDownItems: changedDropDownCategory1),
-              productsDropDown(
-                  textTitle: "קטגוריה משנית",
-                  selectedItem: selectedCategory2,
-                  dropDownItems: dropDownCategory2,
-                  changedDropDownItems: changedDropDownCategory2),
-              productsDropDown(
-                  textTitle: "קטגוריה משנית משנית",
-                  selectedItem: selectedCategory3,
-                  dropDownItems: dropDownCategory3,
-                  changedDropDownItems: changedDropDownCategory3),
-              SizedBox(height: 10.0),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    productsDropDown(
-                        textTitle: "משקל בק'ג",
-                        selectedItem: selectedWeightKilos,
-                        dropDownItems: dropDownWeightKilos,
-                        changedDropDownItems: changedDropDownWeightKilos),
-                    productsDropDown(
-                        textTitle: "משקל בגרם",
-                        selectedItem: selectedWeightGrams,
-                        dropDownItems: dropDownWeightGrams,
-                        changedDropDownItems: changedDropDownWeightGrams),
-                  ],
-                ),
-              ),
-              new SizedBox(height: 20.0),
-              appButton(
-                  btnTxt: "אישור",
-                  btnPadding: 20.0,
-                  btnColor: Theme.of(context).primaryColor,
-                  onBtnclicked: () => addNewProducts()),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
