@@ -6,7 +6,7 @@ import 'cart.dart';
 import 'package:Toogle/app_localizations.dart';
 import 'images_in_large.dart';
 import 'package:Toogle/tools/app_data.dart';
-import 'package:Toogle/userScreens/loginlogout.dart';
+//import 'package:Toogle/userScreens/loginlogout.dart';
 
 class ItemDetail extends StatefulWidget {
   String itemId;

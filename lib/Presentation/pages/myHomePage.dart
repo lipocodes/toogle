@@ -1,3 +1,4 @@
+import 'package:Toogle/Presentation/state_management/user_provider/user_provider.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,6 +21,7 @@ import 'package:Toogle/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -300,73 +302,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       selectedShop = shopName;
     });
-
-    /*List<String> detailsShops =
-        await firebaseMethods.retrieveShopList(this.isLoggedIn);
-    this.listShopID.add("123");
-
-
-    for (int i = 0; i < detailsShops.length; i++) {
-      List<String> temp = detailsShops[i].split("^^^");
-
-      this.listShopID.add(temp[0]);
-      this.listShopName.add(temp[1]);
-    }
-
-    this.shopList = this.listShopName;
-    if (this.shopList.length > 1) {
-      this.dropDownShop = buildAndGetDropDownItems(this.shopList);
-      List<String> list1 = [];
-      List<String> list2 = [];
-      List<String> list3 = [];
-
-      //this.dropDownShop = buildAndGetDropDownItems(this.shopList);
-      this.selectedShop = this.defaultShopName;
-
-      this.shopCategoryLevel1 = shopBuildingMaterialsCategoryLevel1;
-      this.shopCategoryLevel2 = shopBuildingMaterialsCategoryLevel2;
-      this.shopCategoryLevel3 = shopBuildingMaterialsCategoryLevel3;
-
-      this.dropDownCategory1 =
-          buildAndGetDropDownItems(this.shopCategoryLevel1);
-
-      this.selectedCategory1 = dropDownCategory1[0].value;
-
-      for (int i = 0; i < this.shopCategoryLevel1.length; i++) {
-        String temp = this.shopCategoryLevel1[i];
-        int pos = temp.indexOf("^^^");
-        temp = temp.substring(pos + 3);
-        list1.add(temp);
-      }
-
-      this.shopCategoryLevel1 = list1;
-      //this.shopCategoryLevel2 = list2;
-      //this.shopCategoryLevel3 = list3;
-
-      this.dropDownCategory1 =
-          buildAndGetDropDownItems(this.shopCategoryLevel1);
-
-      this.selectedCategory1 = dropDownCategory1[0].value;
-    }
-
-    setState(() {});*/
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // we need the user to login as Guest as default
-    loginAsGuest();
-
-    //readFile('phone');
-    SharedPreferences.getInstance().then((SharedPreferences sp) {
-      prefs = sp;
-      cartContents = sp.getStringList('cartContents');
-      this.cartContentsSize = sp.getInt('cartCounter');
-      setState(() {});
-    });
-    //getCurrentUser();
   }
 
   retrieveShopList() async {
@@ -502,586 +437,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
-
-    //if we are now inside a shop: getting its  phone number
-    if (this.phoneShop.length == 0 && this.visitedShopID.length > 0) {
-      getPhoneVisitedShop();
-      writeDataLocally(key: "visitedShopID", value: this.visitedShopID);
-    }
-
-    this.context = context;
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: new Scaffold(
-        key: scaffoldKey,
-        appBar: new AppBar(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              IconButton(
-                icon: Icon(Icons.videocam),
-                iconSize: 40,
-                color: Colors.white,
-                splashColor: Colors.purple,
-                onPressed: () async {
-                  String url = "http://shopping-il.com/#videos";
-                  if (await canLaunch(url)) {
-                    await launch(url);
-                  } else {
-                    throw 'Could not launch $url';
-                  }
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.admin_panel_settings),
-                iconSize: 40,
-                color: Colors.black,
-                splashColor: Colors.purple,
-                onPressed: () async {
-                  openAdmin();
-                },
-              ),
-              if (this.visitedShopID.length > 0 &&
-                  this.phoneShop.length > 0) ...[
-                IconButton(
-                  icon: Icon(
-                    Icons.phone,
-                  ),
-                  iconSize: 24,
-                  color: Colors.white,
-                  splashColor: Colors.purple,
-                  onPressed: () async {
-                    String num = this.phoneShop;
-                    String url = "tel:" + num;
-                    if (await canLaunch(url)) {
-                      await launch(url);
-                    } else {
-                      throw 'Could not launch $url';
-                    }
-                  },
-                ),
-                IconButton(
-                    icon: FaIcon(FontAwesomeIcons.whatsapp),
-                    onPressed: () async {
-                      String num = "+972" + this.phoneShop.substring(1);
-                      var whatsappUrl = "whatsapp://send?phone=$num";
-                      await canLaunch(whatsappUrl)
-                          ? launch(whatsappUrl)
-                          : print(
-                              "Whatsapp is not installed on this device!!!!!!");
-                    }),
-              ],
-              IconButton(
-                icon: Icon(Icons.shop_two),
-                iconSize: 40,
-                color: Colors.black,
-                splashColor: Colors.purple,
-                onPressed: () async {
-                  this.openDialogSwitchShop();
-                },
-              ),
-            ],
-          ),
-          centerTitle: true,
-        ),
-        body: Container(
-          child: Stack(
-            children: [
-              new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  if (dropDownShop == null)
-                    Container()
-                  else if (dropDownShop.length > 0) ...[
-                    Text(selectedShop, style: TextStyle(fontSize: 18))
-                  ],
-                  if (this.selectedShop != "נא לבחור חנות") ...[
-                    Container(
-                      width: 200,
-                      child: productsDropDown(
-                          textTitle: "Color",
-                          selectedItem: selectedCategory1,
-                          dropDownItems: dropDownCategory1,
-                          changedDropDownItems: changedDropDownCategory1),
-                    )
-                  ],
-                  if (this.selectedCategory1 != "הכל" ||
-                      this.selectedCategory1 == "123456789") ...[
-                    Container(
-                      width: 200,
-                      child: productsDropDown(
-                          textTitle: "Color",
-                          selectedItem: selectedCategory2,
-                          dropDownItems: dropDownCategory2,
-                          changedDropDownItems: changedDropDownCategory2),
-                    )
-                  ],
-                  if (this.selectedCategory2 != "הכל" ||
-                      this.selectedCategory2 == "123456789") ...[
-                    Container(
-                      width: 200,
-                      child: productsDropDown(
-                          textTitle: "Color",
-                          selectedItem: selectedCategory3,
-                          dropDownItems: dropDownCategory3,
-                          changedDropDownItems: changedDropDownCategory3),
-                    )
-                  ],
-                  if (this.controllerSearch.text.length > 0) ...[
-                    new Flexible(
-                        child: new StreamBuilder(
-                            stream: firestore
-                                .collection("products_" + this.visitedShopID)
-                                .where("productTitle",
-                                    isEqualTo: this.selectedProductInSearch)
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return noDataFound();
-                              } else {
-                                final int dataCount =
-                                    snapshot.data.documents.length;
-                                print("Data count is $dataCount");
-                                if (dataCount == 0) {
-                                  return noDataFound();
-                                } else {
-                                  return new GridView.builder(
-                                      gridDelegate:
-                                          // ignore: missing_return
-                                          new SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 2),
-                                      itemCount: dataCount,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        final DocumentSnapshot document =
-                                            snapshot.data.documents[index];
-
-                                        return buildProducts(
-                                            context, index, document);
-                                      });
-                                }
-                              }
-                            }))
-                  ]
-                  //if the user has chosen all the 3 categories
-                  else if ((this.selectedCategory3 != "הכל" &&
-                      this.selectedCategory3 != "123456789")) ...[
-                    new Flexible(
-                        child: new StreamBuilder(
-                            stream: firestore
-                                .collection("products_" + this.visitedShopID)
-                                .where('productCategory1',
-                                    isEqualTo: this.selectedCategory1)
-                                .where('productCategory2',
-                                    isEqualTo: this.selectedCategory2)
-                                .where('productCategory3',
-                                    isEqualTo: this.selectedCategory3)
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return new Center(
-                                  child: new CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Theme.of(context).primaryColor)),
-                                );
-                              } else {
-                                final int dataCount =
-                                    snapshot.data.documents.length;
-                                print("Data count is $dataCount");
-                                if (dataCount == 0) {
-                                  return noDataFound();
-                                } else {
-                                  return new GridView.builder(
-                                      gridDelegate:
-                                          // ignore: missing_return
-                                          new SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 2),
-                                      itemCount: dataCount,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        final DocumentSnapshot document =
-                                            snapshot.data.documents[index];
-
-                                        return buildProducts(
-                                            context, index, document);
-                                      });
-                                }
-                              }
-                            }))
-                  ]
-
-                  //if the user has chosen categories 1,2
-                  else if (this.selectedCategory2 != "הכל" &&
-                      this.selectedCategory2 != "123456789") ...[
-                    new Flexible(
-                        child: new StreamBuilder(
-                            stream: firestore
-                                .collection("products_" + this.visitedShopID)
-                                .where('productCategory1',
-                                    isEqualTo: this.selectedCategory1)
-                                .where('productCategory2',
-                                    isEqualTo: this.selectedCategory2)
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return new Center(
-                                  child: new CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Theme.of(context).primaryColor)),
-                                );
-                              } else {
-                                final int dataCount =
-                                    snapshot.data.documents.length;
-                                print("Data count is $dataCount");
-                                if (dataCount == 0) {
-                                  return noDataFound();
-                                } else {
-                                  return new GridView.builder(
-                                      gridDelegate:
-                                          // ignore: missing_return
-                                          new SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 2),
-                                      itemCount: dataCount,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        final DocumentSnapshot document =
-                                            snapshot.data.documents[index];
-
-                                        return buildProducts(
-                                            context, index, document);
-                                      });
-                                }
-                              }
-                            }))
-                  ]
-                  //if the user has chosen only category 1
-                  else if (this.selectedCategory1 != "הכל" &&
-                      this.selectedCategory1 != "123456789") ...[
-                    new Flexible(
-                        child: new StreamBuilder(
-                            stream: firestore
-                                .collection("products_" + this.visitedShopID)
-                                .where('productCategory1',
-                                    isEqualTo: this.selectedCategory1)
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return new Center(
-                                  child: new CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Theme.of(context).primaryColor)),
-                                );
-                              } else {
-                                final int dataCount =
-                                    snapshot.data.documents.length;
-                                print("Data count is $dataCount");
-                                if (dataCount == 0) {
-                                  return noDataFound();
-                                } else {
-                                  return new GridView.builder(
-                                      gridDelegate:
-                                          // ignore: missing_return
-                                          new SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 2),
-                                      itemCount: dataCount,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        final DocumentSnapshot document =
-                                            snapshot.data.documents[index];
-
-                                        return buildProducts(
-                                            context, index, document);
-                                      });
-                                }
-                              }
-                            }))
-                  ]
-                  //if all the categories are '123456789'
-                  else ...[
-                    new Flexible(
-                        child: new StreamBuilder(
-                            stream: firestore
-                                .collection("products_" + this.visitedShopID)
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return noDataFound();
-                              } else {
-                                final int dataCount =
-                                    snapshot.data.documents.length;
-                                print("Data count is $dataCount");
-                                if (dataCount == 0) {
-                                  return noDataFound();
-                                } else {
-                                  return new GridView.builder(
-                                      gridDelegate:
-                                          // ignore: missing_return
-                                          new SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 2),
-                                      itemCount: dataCount,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        final DocumentSnapshot document =
-                                            snapshot.data.documents[index];
-
-                                        return buildProducts(
-                                            context, index, document);
-                                      });
-                                }
-                              }
-                            }))
-                  ],
-                ],
-              ),
-              if (this.visitedShopID.length > 0) ...[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Container(
-                              width: 150,
-                              height: 80,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: new BorderRadius.all(
-                                    new Radius.circular(15.0),
-                                  ),
-                                ),
-                                child: TextField(
-                                  controller: controllerSearch,
-                                  onChanged: (text) {
-                                    setState(() {
-                                      this.searchSuggestions = [];
-                                      if (this.controllerSearch.text.length ==
-                                          0) {
-                                        this.selectedProductInSearch = "";
-                                      }
-
-                                      if (text.length == 0) {
-                                        this.selectedProductInSearch = "";
-                                      } else {
-                                        for (int i = 0;
-                                            i < listProductsVisitedShop.length;
-                                            i++) {
-                                          if (listProductsVisitedShop[i]
-                                                  .indexOf(text) ==
-                                              0) {
-                                            this.searchSuggestions.add(
-                                                listProductsVisitedShop[i]);
-                                          }
-                                        }
-                                      }
-                                    });
-                                  },
-                                  decoration: new InputDecoration(
-                                    border: new OutlineInputBorder(
-                                        borderSide:
-                                            new BorderSide(color: Colors.teal)),
-                                    hintText: "חיפוש בחנות",
-                                  ),
-                                ),
-                              )),
-                          if (searchSuggestions.length > 0) ...[
-                            RaisedButton(
-                              onPressed: () {
-                                setState(() {
-                                  this.controllerSearch.text = "";
-                                  this.searchSuggestions = [];
-                                });
-                              },
-                              textColor: Colors.white,
-                              padding: const EdgeInsets.all(0.0),
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: <Color>[
-                                      Color(0xFF0D47A1),
-                                      Color(0xFF1976D2),
-                                      Color(0xFF42A5F5),
-                                    ],
-                                  ),
-                                ),
-                                padding: const EdgeInsets.all(10.0),
-                                child: const Text('נקה',
-                                    style: TextStyle(fontSize: 12)),
-                              ),
-                            ),
-                          ],
-                          if (searchSuggestions.length > 0) ...[
-                            Material(
-                              elevation: 20,
-                              child: Container(
-                                  height: 100,
-                                  width: 250,
-                                  child: new ListView.builder(
-                                      //scrollDirection: Axis.horizontal,
-                                      itemCount: searchSuggestions.length,
-                                      itemBuilder:
-                                          (BuildContext ctxt, int index) {
-                                        return GestureDetector(
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 5.0),
-                                            child: new Text(
-                                              searchSuggestions[index],
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.red),
-                                            ),
-                                          ),
-                                          onTap: (() {
-                                            setState(() {
-                                              this.selectedProductInSearch =
-                                                  searchSuggestions[index];
-                                              controllerSearch.text =
-                                                  this.selectedProductInSearch;
-                                              this.searchSuggestions = [];
-                                              FocusScope.of(context).unfocus();
-                                            });
-                                          }),
-                                        );
-                                      })),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-        floatingActionButton: !this.acctEmail.contains("guest")
-            ? new Stack(
-                alignment: Alignment.topLeft,
-                children: <Widget>[
-                  new FloatingActionButton(
-                    onPressed: () async {
-                      String acctEmail = prefs.getString("acctEmail");
-                      if (acctEmail == "guest@gmail.com") {
-                        String response = await Navigator.of(context).push(
-                            new CupertinoPageRoute(
-                                builder: (BuildContext context) =>
-                                    new ShopLogin()));
-                      } else {
-                        Navigator.of(context).push(new CupertinoPageRoute(
-                            builder: (BuildContext context) => new ShopCart()));
-                        //retrievePrefs();
-                        //setState(() {});
-                      }
-                    },
-                    child: new Icon(Icons.shopping_cart),
-                  ),
-                  new CircleAvatar(
-                    radius: 10.0,
-                    backgroundColor: Colors.red,
-                    child: new Text(
-                      this.cartContentsSize == null
-                          ? "0"
-                          : this.cartContentsSize.toString(),
-                      style: new TextStyle(color: Colors.white, fontSize: 12.0),
-                    ),
-                  )
-                ],
-              )
-            : Container(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        drawer: new Drawer(
-          child: new Column(
-            children: <Widget>[
-              new UserAccountsDrawerHeader(
-                accountName: new Text(acctName),
-                accountEmail: new Text(acctEmail),
-                currentAccountPicture: new CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: new Icon(Icons.person),
-                ),
-              ),
-              new ListTile(
-                onTap: () async {
-                  await displayDialog(context);
-                  if (controllerPhone.value.text.length == 0) return;
-                  await prefs.setString(
-                      "clientPhone", controllerPhone.value.text);
-                  Navigator.of(context).push(new CupertinoPageRoute(
-                      builder: (BuildContext context) => new ShopHistory()));
-                },
-                leading: new CircleAvatar(
-                    child: new Icon(Icons.history,
-                        color: Colors.white, size: 15.0)),
-                title: new Text("הזמנות קודמות"),
-              ),
-              new Divider(),
-              new ListTile(
-                enabled: this.isLoggedIn == true &&
-                        this.acctEmail != 'guest@gmail.com'
-                    ? true
-                    : false,
-                onTap: () {
-                  Navigator.of(context).push(new CupertinoPageRoute(
-                      builder: (BuildContext context) =>
-                          new CreateEditShop(this.acctEmail, this.acctUserID)));
-                },
-                leading: new CircleAvatar(
-                    child: new Icon(Icons.shopping_cart,
-                        color: Colors.white, size: 15.0)),
-                title: new Text("יצירה/עריכה של חנות"),
-              ),
-              new Divider(),
-              new ListTile(
-                enabled: this.isLoggedIn == true &&
-                        this.acctEmail != 'guest@gmail.com'
-                    ? true
-                    : false,
-                onTap: () {
-                  Navigator.of(context).push(new CupertinoPageRoute(
-                      builder: (BuildContext context) =>
-                          new ShopDelivery(this.acctEmail)));
-                },
-                leading: new CircleAvatar(
-                    child:
-                        new Icon(Icons.home, color: Colors.white, size: 15.0)),
-                title: new Text("כתובת למשלוח"),
-              ),
-              new Divider(),
-              new ListTile(
-                onTap: () {
-                  Navigator.of(context).push(new CupertinoPageRoute(
-                      builder: (BuildContext context) => new Contact()));
-                },
-                leading: new Text("יצירת קשר"),
-                trailing: new CircleAvatar(
-                    child:
-                        new Icon(Icons.help, color: Colors.white, size: 15.0)),
-              ),
-              new ListTile(
-                onTap: () {
-                  checkIfLoggedIn();
-                },
-                title: new Text(
-                    (isLoggedIn == true && !this.acctEmail.contains("guest"))
-                        ? "יציאה"
-                        : "כניסה"),
-                trailing: new CircleAvatar(
-                    child: new Icon(Icons.exit_to_app,
-                        color: Colors.white, size: 15.0)),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   checkIfLoggedIn() async {
     if (this.acctEmail.contains("guest") == true) {
       await firebaseMethods.logOutUser();
@@ -1131,6 +486,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {});
   }
+
+  //Widgets section///////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////
 
   Widget noDataFound() {
     return new Container(
@@ -1238,5 +596,614 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  Widget customAppBar() {
+    return new AppBar(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          IconButton(
+            icon: Icon(Icons.videocam),
+            iconSize: 40,
+            color: Colors.white,
+            splashColor: Colors.purple,
+            onPressed: () async {
+              String url = "http://6yamim.xyz/info.html#videos";
+              if (await canLaunch(url)) {
+                await launch(url);
+              } else {
+                throw 'Could not launch $url';
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.admin_panel_settings),
+            iconSize: 40,
+            color: Colors.black,
+            splashColor: Colors.purple,
+            onPressed: () async {
+              openAdmin();
+            },
+          ),
+          if (this.visitedShopID.length > 0 && this.phoneShop.length > 0) ...[
+            IconButton(
+              icon: Icon(
+                Icons.phone,
+              ),
+              iconSize: 24,
+              color: Colors.white,
+              splashColor: Colors.purple,
+              onPressed: () async {
+                String num = this.phoneShop;
+                String url = "tel:" + num;
+                if (await canLaunch(url)) {
+                  await launch(url);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
+            ),
+            IconButton(
+                icon: FaIcon(FontAwesomeIcons.whatsapp),
+                onPressed: () async {
+                  String num = "+972" + this.phoneShop.substring(1);
+                  var whatsappUrl = "whatsapp://send?phone=$num";
+                  await canLaunch(whatsappUrl)
+                      ? launch(whatsappUrl)
+                      : print("Whatsapp is not installed on this device!!!!!!");
+                }),
+          ],
+          IconButton(
+            icon: Icon(Icons.shop_two),
+            iconSize: 40,
+            color: Colors.black,
+            splashColor: Colors.purple,
+            onPressed: () async {
+              this.openDialogSwitchShop();
+            },
+          ),
+        ],
+      ),
+      centerTitle: true,
+    );
+  }
+
+  Widget customBody() {
+    return Container(
+      child: Stack(
+        children: [
+          new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              if (dropDownShop == null)
+                Container()
+              else if (dropDownShop.length > 0) ...[
+                Text(selectedShop, style: TextStyle(fontSize: 18))
+              ],
+              if (this.selectedShop != "נא לבחור חנות") ...[
+                Container(
+                  width: 200,
+                  child: productsDropDown(
+                      textTitle: "Color",
+                      selectedItem: selectedCategory1,
+                      dropDownItems: dropDownCategory1,
+                      changedDropDownItems: changedDropDownCategory1),
+                )
+              ],
+              if (this.selectedCategory1 != "הכל" ||
+                  this.selectedCategory1 == "123456789") ...[
+                Container(
+                  width: 200,
+                  child: productsDropDown(
+                      textTitle: "Color",
+                      selectedItem: selectedCategory2,
+                      dropDownItems: dropDownCategory2,
+                      changedDropDownItems: changedDropDownCategory2),
+                )
+              ],
+              if (this.selectedCategory2 != "הכל" ||
+                  this.selectedCategory2 == "123456789") ...[
+                Container(
+                  width: 200,
+                  child: productsDropDown(
+                      textTitle: "Color",
+                      selectedItem: selectedCategory3,
+                      dropDownItems: dropDownCategory3,
+                      changedDropDownItems: changedDropDownCategory3),
+                )
+              ],
+              if (this.controllerSearch.text.length > 0) ...[
+                new Flexible(
+                    child: new StreamBuilder(
+                        stream: firestore
+                            .collection("products_" + this.visitedShopID)
+                            .where("productTitle",
+                                isEqualTo: this.selectedProductInSearch)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return noDataFound();
+                          } else {
+                            final int dataCount =
+                                snapshot.data.documents.length;
+                            print("Data count is $dataCount");
+                            if (dataCount == 0) {
+                              return noDataFound();
+                            } else {
+                              return new GridView.builder(
+                                  gridDelegate:
+                                      // ignore: missing_return
+                                      new SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2),
+                                  itemCount: dataCount,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final DocumentSnapshot document =
+                                        snapshot.data.documents[index];
+
+                                    return buildProducts(
+                                        context, index, document);
+                                  });
+                            }
+                          }
+                        }))
+              ]
+              //if the user has chosen all the 3 categories
+              else if ((this.selectedCategory3 != "הכל" &&
+                  this.selectedCategory3 != "123456789")) ...[
+                new Flexible(
+                    child: new StreamBuilder(
+                        stream: firestore
+                            .collection("products_" + this.visitedShopID)
+                            .where('productCategory1',
+                                isEqualTo: this.selectedCategory1)
+                            .where('productCategory2',
+                                isEqualTo: this.selectedCategory2)
+                            .where('productCategory3',
+                                isEqualTo: this.selectedCategory3)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return new Center(
+                              child: new CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Theme.of(context).primaryColor)),
+                            );
+                          } else {
+                            final int dataCount =
+                                snapshot.data.documents.length;
+                            print("Data count is $dataCount");
+                            if (dataCount == 0) {
+                              return noDataFound();
+                            } else {
+                              return new GridView.builder(
+                                  gridDelegate:
+                                      // ignore: missing_return
+                                      new SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2),
+                                  itemCount: dataCount,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final DocumentSnapshot document =
+                                        snapshot.data.documents[index];
+
+                                    return buildProducts(
+                                        context, index, document);
+                                  });
+                            }
+                          }
+                        }))
+              ]
+
+              //if the user has chosen categories 1,2
+              else if (this.selectedCategory2 != "הכל" &&
+                  this.selectedCategory2 != "123456789") ...[
+                new Flexible(
+                    child: new StreamBuilder(
+                        stream: firestore
+                            .collection("products_" + this.visitedShopID)
+                            .where('productCategory1',
+                                isEqualTo: this.selectedCategory1)
+                            .where('productCategory2',
+                                isEqualTo: this.selectedCategory2)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return new Center(
+                              child: new CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Theme.of(context).primaryColor)),
+                            );
+                          } else {
+                            final int dataCount =
+                                snapshot.data.documents.length;
+                            print("Data count is $dataCount");
+                            if (dataCount == 0) {
+                              return noDataFound();
+                            } else {
+                              return new GridView.builder(
+                                  gridDelegate:
+                                      // ignore: missing_return
+                                      new SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2),
+                                  itemCount: dataCount,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final DocumentSnapshot document =
+                                        snapshot.data.documents[index];
+
+                                    return buildProducts(
+                                        context, index, document);
+                                  });
+                            }
+                          }
+                        }))
+              ]
+              //if the user has chosen only category 1
+              else if (this.selectedCategory1 != "הכל" &&
+                  this.selectedCategory1 != "123456789") ...[
+                new Flexible(
+                    child: new StreamBuilder(
+                        stream: firestore
+                            .collection("products_" + this.visitedShopID)
+                            .where('productCategory1',
+                                isEqualTo: this.selectedCategory1)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return new Center(
+                              child: new CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Theme.of(context).primaryColor)),
+                            );
+                          } else {
+                            final int dataCount =
+                                snapshot.data.documents.length;
+                            print("Data count is $dataCount");
+                            if (dataCount == 0) {
+                              return noDataFound();
+                            } else {
+                              return new GridView.builder(
+                                  gridDelegate:
+                                      // ignore: missing_return
+                                      new SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2),
+                                  itemCount: dataCount,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final DocumentSnapshot document =
+                                        snapshot.data.documents[index];
+
+                                    return buildProducts(
+                                        context, index, document);
+                                  });
+                            }
+                          }
+                        }))
+              ]
+              //if all the categories are '123456789'
+              else ...[
+                new Flexible(
+                    child: new StreamBuilder(
+                        stream: firestore
+                            .collection("products_" + this.visitedShopID)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return noDataFound();
+                          } else {
+                            final int dataCount =
+                                snapshot.data.documents.length;
+                            print("Data count is $dataCount");
+                            if (dataCount == 0) {
+                              return noDataFound();
+                            } else {
+                              return new GridView.builder(
+                                  gridDelegate:
+                                      // ignore: missing_return
+                                      new SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2),
+                                  itemCount: dataCount,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final DocumentSnapshot document =
+                                        snapshot.data.documents[index];
+
+                                    return buildProducts(
+                                        context, index, document);
+                                  });
+                            }
+                          }
+                        }))
+              ],
+            ],
+          ),
+          if (this.visitedShopID.length > 0) ...[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                          width: 150,
+                          height: 80,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: new BorderRadius.all(
+                                new Radius.circular(15.0),
+                              ),
+                            ),
+                            child: TextField(
+                              controller: controllerSearch,
+                              onChanged: (text) {
+                                setState(() {
+                                  this.searchSuggestions = [];
+                                  if (this.controllerSearch.text.length == 0) {
+                                    this.selectedProductInSearch = "";
+                                  }
+
+                                  if (text.length == 0) {
+                                    this.selectedProductInSearch = "";
+                                  } else {
+                                    for (int i = 0;
+                                        i < listProductsVisitedShop.length;
+                                        i++) {
+                                      if (listProductsVisitedShop[i]
+                                              .indexOf(text) ==
+                                          0) {
+                                        this
+                                            .searchSuggestions
+                                            .add(listProductsVisitedShop[i]);
+                                      }
+                                    }
+                                  }
+                                });
+                              },
+                              decoration: new InputDecoration(
+                                border: new OutlineInputBorder(
+                                    borderSide:
+                                        new BorderSide(color: Colors.teal)),
+                                hintText: "חיפוש בחנות",
+                              ),
+                            ),
+                          )),
+                      if (searchSuggestions.length > 0) ...[
+                        RaisedButton(
+                          onPressed: () {
+                            setState(() {
+                              this.controllerSearch.text = "";
+                              this.searchSuggestions = [];
+                            });
+                          },
+                          textColor: Colors.white,
+                          padding: const EdgeInsets.all(0.0),
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: <Color>[
+                                  Color(0xFF0D47A1),
+                                  Color(0xFF1976D2),
+                                  Color(0xFF42A5F5),
+                                ],
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(10.0),
+                            child: const Text('נקה',
+                                style: TextStyle(fontSize: 12)),
+                          ),
+                        ),
+                      ],
+                      if (searchSuggestions.length > 0) ...[
+                        Material(
+                          elevation: 20,
+                          child: Container(
+                              height: 100,
+                              width: 250,
+                              child: new ListView.builder(
+                                  //scrollDirection: Axis.horizontal,
+                                  itemCount: searchSuggestions.length,
+                                  itemBuilder: (BuildContext ctxt, int index) {
+                                    return GestureDetector(
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 5.0),
+                                        child: new Text(
+                                          searchSuggestions[index],
+                                          style: TextStyle(
+                                              fontSize: 16, color: Colors.red),
+                                        ),
+                                      ),
+                                      onTap: (() {
+                                        setState(() {
+                                          this.selectedProductInSearch =
+                                              searchSuggestions[index];
+                                          controllerSearch.text =
+                                              this.selectedProductInSearch;
+                                          this.searchSuggestions = [];
+                                          FocusScope.of(context).unfocus();
+                                        });
+                                      }),
+                                    );
+                                  })),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget customFloatingButton() {
+    return !this.acctEmail.contains("guest")
+        ? new Stack(
+            alignment: Alignment.topLeft,
+            children: <Widget>[
+              new FloatingActionButton(
+                onPressed: () async {
+                  String acctEmail = prefs.getString("acctEmail");
+                  if (acctEmail == "guest@gmail.com") {
+                    String response = await Navigator.of(context).push(
+                        new CupertinoPageRoute(
+                            builder: (BuildContext context) =>
+                                new ShopLogin()));
+                  } else {
+                    Navigator.of(context).push(new CupertinoPageRoute(
+                        builder: (BuildContext context) => new ShopCart()));
+                    //retrievePrefs();
+                    //setState(() {});
+                  }
+                },
+                child: new Icon(Icons.shopping_cart),
+              ),
+              new CircleAvatar(
+                radius: 10.0,
+                backgroundColor: Colors.red,
+                child: new Text(
+                  this.cartContentsSize == null
+                      ? "0"
+                      : this.cartContentsSize.toString(),
+                  style: new TextStyle(color: Colors.white, fontSize: 12.0),
+                ),
+              )
+            ],
+          )
+        : Container();
+  }
+
+  Widget customDrawer() {
+    return new Drawer(
+      child: new Column(
+        children: <Widget>[
+          new UserAccountsDrawerHeader(
+            accountName: new Text(acctName),
+            accountEmail: new Text(acctEmail),
+            currentAccountPicture: new CircleAvatar(
+              backgroundColor: Colors.white,
+              child: new Icon(Icons.person),
+            ),
+          ),
+          new ListTile(
+            onTap: () async {
+              await displayDialog(context);
+              if (controllerPhone.value.text.length == 0) return;
+              await prefs.setString("clientPhone", controllerPhone.value.text);
+              Navigator.of(context).push(new CupertinoPageRoute(
+                  builder: (BuildContext context) => new ShopHistory()));
+            },
+            leading: new CircleAvatar(
+                child:
+                    new Icon(Icons.history, color: Colors.white, size: 15.0)),
+            title: new Text("הזמנות קודמות"),
+          ),
+          new Divider(),
+          new ListTile(
+            enabled:
+                this.isLoggedIn == true && this.acctEmail != 'guest@gmail.com'
+                    ? true
+                    : false,
+            onTap: () {
+              Navigator.of(context).push(new CupertinoPageRoute(
+                  builder: (BuildContext context) =>
+                      new CreateEditShop(this.acctEmail, this.acctUserID)));
+            },
+            leading: new CircleAvatar(
+                child: new Icon(Icons.shopping_cart,
+                    color: Colors.white, size: 15.0)),
+            title: new Text("יצירה/עריכה של חנות"),
+          ),
+          new Divider(),
+          new ListTile(
+            enabled:
+                this.isLoggedIn == true && this.acctEmail != 'guest@gmail.com'
+                    ? true
+                    : false,
+            onTap: () {
+              Navigator.of(context).push(new CupertinoPageRoute(
+                  builder: (BuildContext context) =>
+                      new ShopDelivery(this.acctEmail)));
+            },
+            leading: new CircleAvatar(
+                child: new Icon(Icons.home, color: Colors.white, size: 15.0)),
+            title: new Text("כתובת למשלוח"),
+          ),
+          new Divider(),
+          new ListTile(
+            onTap: () {
+              Navigator.of(context).push(new CupertinoPageRoute(
+                  builder: (BuildContext context) => new Contact()));
+            },
+            leading: new Text("יצירת קשר"),
+            trailing: new CircleAvatar(
+                child: new Icon(Icons.help, color: Colors.white, size: 15.0)),
+          ),
+          new ListTile(
+            onTap: () {
+              //Provider.of<UserProvider>(context, listen: false)
+              checkIfLoggedIn();
+            },
+            title: new Text(
+                (isLoggedIn == true && !this.acctEmail.contains("guest"))
+                    ? "יציאה"
+                    : "כניסה"),
+            trailing: new CircleAvatar(
+                child: new Icon(Icons.exit_to_app,
+                    color: Colors.white, size: 15.0)),
+          ),
+        ],
+      ),
+    );
+  }
+
+//build() section/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+  Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+
+    //if we are now inside a shop: getting its  phone number
+    if (this.phoneShop.length == 0 && this.visitedShopID.length > 0) {
+      getPhoneVisitedShop();
+      writeDataLocally(key: "visitedShopID", value: this.visitedShopID);
+    }
+
+    this.context = context;
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: new Scaffold(
+        key: scaffoldKey,
+        appBar: customAppBar(),
+        body: customBody(),
+        floatingActionButton: customFloatingButton(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        drawer: customDrawer(),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // we need the user to login as Guest as default
+    loginAsGuest();
+
+    //readFile('phone');
+    SharedPreferences.getInstance().then((SharedPreferences sp) {
+      prefs = sp;
+      cartContents = sp.getStringList('cartContents');
+      this.cartContentsSize = sp.getInt('cartCounter');
+      setState(() {});
+    });
+    //getCurrentUser();
   }
 }
