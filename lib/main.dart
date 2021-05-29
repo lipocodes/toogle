@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:Toogle/Presentation/pages/contact.dart';
 import 'package:Toogle/Presentation/pages/myHomePage.dart';
+import 'package:Toogle/Presentation/state_management/contact_provider/contact_provider.dart';
 import 'package:Toogle/Presentation/state_management/myHomePage_provider/myHomePage_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -15,18 +17,23 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Shop',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(
+          value: ContactProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Shop',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        routes: {
+          //'/': (BuildContext context) => MyHomePage(),
+          '/contact': (BuildContext context) => Contact(),
+        },
+        home: MyHomePage(),
       ),
-      home: MultiProvider(providers: [
-        ChangeNotifierProvider<MyHomePageProvider>(
-            create: (context) => MyHomePageProvider()),
-      ], child: MyHomePage()),
-      routes: {
-        '/shopLogin': (BuildContext context) => ShopLogin(),
-      },
     );
   }
 }

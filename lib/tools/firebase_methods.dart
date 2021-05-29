@@ -451,7 +451,7 @@ class FirebaseMethods /*implements AppMethods*/ {
     }
     var dio = Dio();
     Response response = await dio.get(
-        'https://shopping-il.com/mail_order_confirmation.php?email=' +
+        'https://6yamim.xyz/mail_order_confirmation.php?email=' +
             userEmail +
             "&orderDetails=" +
             str);

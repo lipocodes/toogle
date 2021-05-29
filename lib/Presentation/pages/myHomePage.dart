@@ -7,7 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'favourites.dart';
 import 'cart.dart';
 import 'history.dart';
 import 'create_edit_shop.dart';
@@ -735,8 +734,7 @@ class _MyHomePageState extends State<MyHomePage> {
           new Divider(),
           new ListTile(
             onTap: () {
-              Navigator.of(context).push(new CupertinoPageRoute(
-                  builder: (BuildContext context) => new Contact()));
+              Navigator.pushNamed(context, '/contact');
             },
             leading: new Text("יצירת קשר"),
             trailing: new CircleAvatar(

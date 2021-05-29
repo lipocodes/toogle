@@ -47,7 +47,7 @@ class _PaypalState extends State<Paypal> {
 
   Widget customBody(String params) {
     return WebView(
-      initialUrl: "https://shopping-il.com/paypalPayment.php?" + params,
+      initialUrl: "https://6yamim.xyz/paypalPayment.php?" + params,
       javascriptMode: JavascriptMode.unrestricted,
       onWebViewCreated: (WebViewController webViewController) async {
         //_controller.complete(webViewController);

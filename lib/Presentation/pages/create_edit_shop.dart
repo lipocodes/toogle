@@ -115,7 +115,7 @@ class _CreateEditShopState extends State<CreateEditShop> {
                               color: Colors.white,
                               onPressed: () {
                                 FlutterClipboard.copy(
-                                        "https://shopping-il.com/app")
+                                        "https://www.6yamim.xyz/#/")
                                     .then(
                                         (value) => print('xxxxxxxxxxxxxxxxx'));
                               },
@@ -133,14 +133,14 @@ class _CreateEditShopState extends State<CreateEditShop> {
                       ? Container()
                       : InkWell(
                           child: SelectableText(
-                            "https://shopping-il.com/app",
+                            "https://www.6yamim.xyz/#/",
                             style: TextStyle(
                                 decoration: TextDecoration.underline,
                                 fontSize: 16,
                                 color: Colors.red,
                                 fontWeight: FontWeight.bold),
                           ),
-                          onTap: () => launch("https://shopping-il.com/app")),
+                          onTap: () => launch("https://www.6yamim.xyz/#/")),
                 ],
               ),
             ),

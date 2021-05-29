@@ -1,17 +1,15 @@
+import 'package:Toogle/Presentation/state_management/contact_provider/contact_provider.dart';
+import 'package:Toogle/Presentation/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:Toogle/Core/app_localizations.dart';
 
 class Contact extends StatelessWidget {
-  final valueName = TextEditingController();
-  final valuePhone = TextEditingController();
-  final valueEmail = TextEditingController();
-  final valueText = TextEditingController();
-
   //Widget section//////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////
-  Widget customAppBar() {
+  Widget customAppBar(ContactProvider contactProvider) {
     return AppBar(
       elevation: 0,
       iconTheme: IconThemeData(
@@ -24,7 +22,8 @@ class Contact extends StatelessWidget {
     );
   }
 
-  Widget customBody(BuildContext context) {
+  Widget customBody(BuildContext context, ContactProvider contactProvider) {
+    var prov = Provider.of<ContactProvider>(context);
     return Directionality(
       textDirection: TextDirection.rtl,
       child: new Column(
@@ -37,106 +36,33 @@ class Contact extends StatelessWidget {
           new SizedBox(
             height: 20.0,
           ),
-          new ListTile(
-            leading: const Icon(Icons.person),
-            title: new TextFormField(
-              controller: valueName,
-              decoration: new InputDecoration(
-                labelText: "שם",
-                fillColor: Colors.white,
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25.0),
-                  borderSide: BorderSide(
-                    color: Colors.blue,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25.0),
-                  borderSide: BorderSide(
-                    color: Colors.blueAccent,
-                    width: 2.0,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          customListTile(
+              icon: Icon(Icons.person),
+              textInputType: TextInputType.text,
+              maxLines: 1,
+              controller: prov.valueName,
+              labelText: "שם"),
           new SizedBox(height: 10.0),
-          new ListTile(
-            leading: const Icon(Icons.phone),
-            title: new TextFormField(
-              keyboardType: TextInputType.number,
-              controller: valuePhone,
-              decoration: new InputDecoration(
-                labelText: "טלפון",
-                fillColor: Colors.white,
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25.0),
-                  borderSide: BorderSide(
-                    color: Colors.blue,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25.0),
-                  borderSide: BorderSide(
-                    color: Colors.blueAccent,
-                    width: 2.0,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          customListTile(
+              icon: Icon(Icons.phone),
+              textInputType: TextInputType.phone,
+              maxLines: 1,
+              controller: prov.valuePhone,
+              labelText: "טלפון"),
           new SizedBox(height: 10.0),
-          new ListTile(
-            leading: const Icon(Icons.email),
-            title: new TextFormField(
-              controller: valueEmail,
-              decoration: new InputDecoration(
-                labelText: "דואר אלקטרוני",
-                fillColor: Colors.white,
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25.0),
-                  borderSide: BorderSide(
-                    color: Colors.blue,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25.0),
-                  borderSide: BorderSide(
-                    color: Colors.blueAccent,
-                    width: 2.0,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          customListTile(
+              icon: Icon(Icons.email),
+              textInputType: TextInputType.emailAddress,
+              maxLines: 1,
+              controller: prov.valueEmail,
+              labelText: "דואר אלקטרוני"),
           new SizedBox(height: 10.0),
-          new ListTile(
-            leading: const Icon(Icons.text_fields),
-            title: SingleChildScrollView(
-              child: new TextFormField(
-                keyboardType: TextInputType.multiline,
-                maxLines: 5,
-                controller: valueText,
-                decoration: new InputDecoration(
-                  labelText: "תוכן",
-                  fillColor: Colors.white,
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25.0),
-                    borderSide: BorderSide(
-                      color: Colors.blue,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25.0),
-                    borderSide: BorderSide(
-                      color: Colors.blueAccent,
-                      width: 2.0,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          customListTile(
+              icon: Icon(Icons.text_fields),
+              textInputType: TextInputType.multiline,
+              maxLines: 5,
+              controller: prov.valueText,
+              labelText: "תוכן"),
           Padding(
             padding: const EdgeInsets.only(left: 50.0, top: 20.0, right: 50.0),
             child: Container(
@@ -151,15 +77,13 @@ class Contact extends StatelessWidget {
                     ],
                   ),
                 ),
-                child: new OutlineButton(
-                  borderSide:
-                      const BorderSide(color: Colors.transparent, width: 0.0),
+                child: new OutlinedButton(
                   child: Text(
                     "שליחה",
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                   onPressed: () {
-                    sendEmail(context);
+                    prov.sendEmail(context);
                   },
                 )),
           ),
@@ -172,44 +96,18 @@ class Contact extends StatelessWidget {
   ///////////////////////////////////////////////////////////////////////////////////////////
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: new Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: customAppBar(),
-        body: customBody(context),
-      ),
-    );
-  }
+    var counter = Provider.of<ContactProvider>(context).valueEmail;
 
-  sendEmail(BuildContext context) async {
-    int pos = valueEmail.text.indexOf('@');
-    String emailUser = valueEmail.text.substring(0, pos);
-    String emailSupplier =
-        valueEmail.text.substring(pos + 1, valueEmail.text.length - 4);
-
-    String str = "Name: " +
-        valueName.text +
-        "    Phone: " +
-        valuePhone.text +
-        "    Email: " +
-        emailUser +
-        "  " +
-        emailSupplier +
-        "  Content: " +
-        valueText.text;
-
-    final String _email = 'mailto:' +
-        'toogle.app@gmail.com' +
-        '?subject=' +
-        "User has just sent a message" +
-        '&body=' +
-        str;
-    try {
-      await launch(_email);
-    } catch (e) {
-      print('eeeeeeeeeeeeeeeeeeeeeeee ' + e.toString());
-    } finally {
-      Navigator.of(context).pop();
-    }
+    return Consumer<ContactProvider>(
+        builder: (context, contactProvider, child) {
+      //print("ccccccccccccccc= " + contactProvider.state.toString());
+      return SafeArea(
+        child: new Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: customAppBar(contactProvider),
+          body: customBody(context, contactProvider),
+        ),
+      );
+    });
   }
 }

