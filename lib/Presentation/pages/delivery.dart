@@ -1,7 +1,8 @@
+import 'package:Toogle/Presentation/widgets/app_tools.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
 import 'package:flutter/material.dart';
-import 'package:Toogle/tools/app_tools.dart';
-import 'package:Toogle/app_localizations.dart';
+//import 'package:Toogle/tools/app_tools.dart';
+//import 'package:Toogle/app_localizations.dart';
 
 class ShopDelivery extends StatefulWidget {
   String acctEmail;

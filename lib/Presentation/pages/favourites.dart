@@ -1,11 +1,12 @@
+import 'package:Toogle/Core/constants/app_data.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:Toogle/tools/app_data.dart';
+//import 'package:Toogle/tools/app_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'item_details.dart';
-import 'package:Toogle/app_localizations.dart';
+import 'package:Toogle/Core/app_localizations.dart';
 
 class ShopFavorites extends StatefulWidget {
   String acctShopID;

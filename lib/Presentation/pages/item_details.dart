@@ -1,11 +1,13 @@
+import 'package:Toogle/Core/constants/app_data.dart';
+import 'package:Toogle/Presentation/widgets/app_tools.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:Toogle/tools/app_tools.dart';
+//import 'package:Toogle/tools/app_tools.dart';
 import 'cart.dart';
-import 'package:Toogle/app_localizations.dart';
+import 'package:Toogle/Core/app_localizations.dart';
 import 'images_in_large.dart';
-import 'package:Toogle/tools/app_data.dart';
+//import 'package:Toogle/tools/app_data.dart';
 //import 'package:Toogle/userScreens/loginlogout.dart';
 
 class ItemDetail extends StatefulWidget {

@@ -1,9 +1,11 @@
-import 'package:Toogle/tools/app_tools.dart';
+//import 'package:Toogle/tools/app_tools.dart';
+import 'package:Toogle/Core/constants/app_data.dart';
+import 'package:Toogle/Presentation/widgets/app_tools.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
 import 'package:flutter/material.dart';
 import 'signup.dart';
-import 'package:Toogle/app_localizations.dart';
-import 'package:Toogle/tools/app_data.dart';
+import 'package:Toogle/Core/app_localizations.dart';
+//import 'package:Toogle/tools/app_data.dart';
 
 class ShopLogin extends StatefulWidget {
   @override

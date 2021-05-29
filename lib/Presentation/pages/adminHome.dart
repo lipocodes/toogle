@@ -1,11 +1,12 @@
+import 'package:Toogle/Presentation/widgets/app_tools.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
 import 'package:flutter/material.dart';
 import 'app_orders.dart';
 import 'app_products.dart';
 import 'add_products.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:Toogle/app_localizations.dart';
-import 'package:Toogle/tools/app_tools.dart';
+import 'package:Toogle/Core/app_localizations.dart';
+//import 'package:Toogle/tools/app_tools.dart';
 import 'package:flutter_sms/flutter_sms.dart';
 
 class AdminHome extends StatefulWidget {

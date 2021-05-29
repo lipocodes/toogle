@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:Toogle/app_localizations.dart';
+import 'package:Toogle/Core/app_localizations.dart';
 
 class Contact extends StatelessWidget {
   final valueName = TextEditingController();

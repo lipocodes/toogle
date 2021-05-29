@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:Toogle/app_localizations.dart';
+import 'package:Toogle/Core/app_localizations.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Toogle/tools/firebase_methods.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:Toogle/app_localizations.dart';
+import 'package:Toogle/Core/app_localizations.dart';
 
 class ProgressDialog extends StatelessWidget {
   @override

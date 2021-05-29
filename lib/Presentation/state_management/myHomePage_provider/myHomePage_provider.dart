@@ -1,10 +1,12 @@
 import 'package:Toogle/Core/constants/app_data.dart';
 import 'package:Toogle/Core/exceptions.dart';
+import 'package:Toogle/Presentation/pages/adminHome.dart';
 import 'package:Toogle/Presentation/pages/loginlogout.dart';
 import 'package:Toogle/Presentation/state_management/myHomePage_provider/myHomePage_state.dart';
 import 'package:Toogle/Presentation/state_management/user_provider/user_state.dart';
-import 'package:Toogle/adminScreens/adminHome.dart';
-import 'package:Toogle/tools/app_tools.dart';
+import 'package:Toogle/Presentation/widgets/app_tools.dart';
+//import 'package:Toogle/adminScreens/adminHome.dart';
+//import 'package:Toogle/tools/app_tools.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';

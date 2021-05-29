@@ -1,9 +1,10 @@
+import 'package:Toogle/Presentation/pages/update_products.dart';
 import 'package:flutter/material.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
-import '../tools/firebase_methods.dart';
-import 'package:Toogle/adminScreens/update_products.dart';
+//import '../tools/firebase_methods.dart';
+//import 'package:Toogle/adminScreens/update_products.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:Toogle/app_localizations.dart';
+import 'package:Toogle/Core/app_localizations.dart';
 
 class AppProducts extends StatefulWidget {
   @override

@@ -1,7 +1,9 @@
+//import 'package:Toogle/tools/progressdialog.dart';
+import 'package:Toogle/Core/progressdialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'progressdialog.dart';
+//mport 'progressdialog.dart';
 import 'dart:io';
 
 Widget appTextField(

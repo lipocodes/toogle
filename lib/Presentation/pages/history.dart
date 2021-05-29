@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
-import 'package:Toogle/app_localizations.dart';
+import 'package:Toogle/Core/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:Toogle/tools/app_tools.dart';
+//import 'package:Toogle/tools/app_tools.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ShopHistory extends StatefulWidget {
