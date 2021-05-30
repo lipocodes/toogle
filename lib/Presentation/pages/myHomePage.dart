@@ -723,9 +723,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ? true
                     : false,
             onTap: () {
-              Navigator.of(context).push(new CupertinoPageRoute(
-                  builder: (BuildContext context) =>
-                      new ShopDelivery(this.acctEmail)));
+              Navigator.pushNamed(context, '/delivery',
+                  arguments: this.acctEmail);
             },
             leading: new CircleAvatar(
                 child: new Icon(Icons.home, color: Colors.white, size: 15.0)),
@@ -733,6 +732,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           new Divider(),
           new ListTile(
+            key: Key("555"),
             onTap: () {
               Navigator.pushNamed(context, '/contact');
             },

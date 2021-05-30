@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class ShopDelivery extends StatefulWidget {
   String acctEmail;
-  ShopDelivery(this.acctEmail);
+  ShopDelivery({this.acctEmail});
   @override
   _ShopDeliveryState createState() => _ShopDeliveryState();
 }
