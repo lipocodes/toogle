@@ -35,3 +35,31 @@ Widget customListTile({
     ),
   );
 }
+
+Widget customTextField(
+    {bool enabled,
+    TextStyle style,
+    int minLines,
+    int maxLines,
+    TextEditingController controller,
+    TextInputType keyboardType,
+    bool filled,
+    Color fillColor,
+    InputBorder inputBorder,
+    String hintText,
+    Icon prefixIcon}) {
+  return new TextField(
+      enabled: enabled,
+      style: style,
+      minLines: minLines,
+      maxLines: maxLines,
+      controller: controller,
+      keyboardType: keyboardType,
+      decoration: new InputDecoration(
+        filled: filled,
+        fillColor: fillColor,
+        border: inputBorder,
+        hintText: hintText,
+        prefixIcon: prefixIcon,
+      ));
+}

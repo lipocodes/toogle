@@ -1,5 +1,6 @@
 import 'package:Toogle/Presentation/state_management/delivery_provider/delivery_provider.dart';
 import 'package:Toogle/Presentation/widgets/app_tools.dart';
+import 'package:Toogle/Presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 //import 'package:Toogle/tools/app_tools.dart';
@@ -39,16 +40,17 @@ class _ShopDeliveryState extends State<ShopDelivery> {
                   color: Colors.white,
                   fontWeight: FontWeight.bold),
             ),
-            new TextField(
+            customTextField(
               controller: prov.controllerFullName,
+              enabled: true,
+              minLines: 1,
+              maxLines: 2,
               keyboardType: TextInputType.text,
-              decoration: new InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                border: InputBorder.none,
-                hintText: "שם מלא",
-                prefixIcon: Icon(Icons.person),
-              ),
+              filled: true,
+              fillColor: Colors.white,
+              inputBorder: InputBorder.none,
+              hintText: "שם מלא",
+              prefixIcon: Icon(Icons.person),
             ),
             SizedBox(height: 20.0),
             Text(
@@ -58,16 +60,17 @@ class _ShopDeliveryState extends State<ShopDelivery> {
                   color: Colors.white,
                   fontWeight: FontWeight.bold),
             ),
-            new TextField(
+            customTextField(
               controller: prov.controllerPhone,
+              enabled: true,
+              minLines: 1,
+              maxLines: 2,
               keyboardType: TextInputType.phone,
-              decoration: new InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                border: InputBorder.none,
-                hintText: "טלפון",
-                prefixIcon: Icon(Icons.phone),
-              ),
+              filled: true,
+              fillColor: Colors.white,
+              inputBorder: InputBorder.none,
+              hintText: "טלפון",
+              prefixIcon: Icon(Icons.phone),
             ),
             SizedBox(height: 20.0),
             Text(
@@ -77,18 +80,18 @@ class _ShopDeliveryState extends State<ShopDelivery> {
                   color: Colors.white,
                   fontWeight: FontWeight.bold),
             ),
-            new TextField(
+            customTextField(
               enabled: false,
+              minLines: 1,
+              maxLines: 2,
               style: TextStyle(fontSize: 22.0, color: Color(0xFFbdc6cf)),
               controller: prov.controllerEmail,
               keyboardType: TextInputType.emailAddress,
-              decoration: new InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                border: InputBorder.none,
-                hintText: "Email",
-                prefixIcon: Icon(Icons.email),
-              ),
+              filled: true,
+              fillColor: Colors.white,
+              inputBorder: InputBorder.none,
+              hintText: "דוא'ל",
+              prefixIcon: Icon(Icons.email),
             ),
             SizedBox(height: 20.0),
             Text(
@@ -98,18 +101,17 @@ class _ShopDeliveryState extends State<ShopDelivery> {
                   color: Colors.white,
                   fontWeight: FontWeight.bold),
             ),
-            new TextField(
-              minLines: 2,
+            customTextField(
+              enabled: true,
+              minLines: 1,
               maxLines: 2,
               controller: prov.controllerAddress,
               keyboardType: TextInputType.text,
-              decoration: new InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                border: InputBorder.none,
-                hintText: "כתובת",
-                prefixIcon: Icon(Icons.contact_mail),
-              ),
+              filled: true,
+              fillColor: Colors.white,
+              inputBorder: InputBorder.none,
+              hintText: "כתובת",
+              prefixIcon: Icon(Icons.contact_mail),
             ),
             new SizedBox(height: 20.0),
             appButton(
@@ -125,13 +127,6 @@ class _ShopDeliveryState extends State<ShopDelivery> {
 
   //Method section///////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////
-  /*@override
-  void initState() {
-    var prov = Provider.of<DeliveryProvider>(context);
-    // TODO: implement initState
-    super.initState();
-    prov.retrieveUserDetails();
-  }*/
 
   @override
   Widget build(BuildContext context) {
