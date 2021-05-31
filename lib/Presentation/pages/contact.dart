@@ -100,7 +100,7 @@ class Contact extends StatelessWidget {
 
     return Consumer<ContactProvider>(
         builder: (context, contactProvider, child) {
-      //print("ccccccccccccccc= " + contactProvider.state.toString());
+      print("ccccccccccccccc= " + contactProvider.state.toString());
       return SafeArea(
         child: new Scaffold(
           resizeToAvoidBottomInset: false,

@@ -6,3 +6,5 @@ abstract class DeliveryState extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class UserDetails extends DeliveryState {}

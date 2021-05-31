@@ -1,6 +1,12 @@
+import 'package:Toogle/Core/exceptions.dart';
+import 'package:Toogle/Data/repositories_impl.dart';
+import 'package:Toogle/Domain/entities/delivery_details.dart';
 import 'package:Toogle/Presentation/state_management/contact_provider/contact_state.dart';
+import 'package:Toogle/Presentation/state_management/delivery_provider/delivery_state.dart';
 import 'package:Toogle/Presentation/widgets/app_tools.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -13,11 +19,11 @@ class DeliveryProvider extends ChangeNotifier {
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   String userEmail = "";
   String acctEmail;
-  ContactState _state;
-  ContactState get state => _state;
+  DeliveryState _state;
+  DeliveryState get state => _state;
 
-  void changeState(ContactState contactState) {
-    _state = contactState;
+  void changeState(DeliveryState deliveryState) {
+    _state = deliveryState;
     notifyListeners();
   }
 
@@ -34,11 +40,16 @@ class DeliveryProvider extends ChangeNotifier {
     }
 
     displayProgressDialog(context);
-    bool result = await firebaseMethods.updateUserDetails(
-        controllerFullName.text,
-        controllerPhone.text,
-        controllerEmail.text,
-        controllerAddress.text);
+
+    DeliveryDetails deliveryDetails = DeliveryDetails(
+        accountFullName: controllerFullName.text,
+        phoneNumber: controllerPhone.text,
+        userEmail: controllerEmail.text,
+        address: controllerAddress.text);
+
+    Map<String, dynamic> map = deliveryDetails.toJson();
+
+    bool result = await RepositoryImpl().updateUserDetails(map);
     closeProgressDialog(context);
     if (result == true) {
       showSnackBar("Update Successful!", scaffoldKey);
@@ -49,16 +60,19 @@ class DeliveryProvider extends ChangeNotifier {
       showSnackBar("Update failed.  Please try later!", scaffoldKey);
   }
 
-  retrieveUserDetails() async {
-    controllerFullName.text = "";
-    controllerPhone.text = "";
-    controllerEmail.text = "";
-    controllerAddress.text = "";
+  retrieveUserDetails(String acctEmail) async {
+    Either<ServerException, List<DocumentSnapshot>> failOrSnapshot =
+        await RepositoryImpl().retrieveUserDetails(acctEmail: acctEmail);
+    failOrSnapshot.fold((exception) {
+      print("retrieveUserDetails() Exception: " + exception.toString());
+    }, (snapshot) {
+      DeliveryDetails deliveryDetails =
+          DeliveryDetails.fromJson(snapshot[0].data);
 
-    var snapshot = await firebaseMethods.retrieveUserDetails(acctEmail);
-    controllerFullName.text = snapshot[0].data['accountFullName'].toString();
-    controllerPhone.text = snapshot[0].data['phoneNumber'].toString();
-    controllerEmail.text = snapshot[0].data['userEmail'].toString();
-    controllerAddress.text = snapshot[0].data['address'].toString();
+      controllerFullName.text = deliveryDetails.accountFullName;
+      controllerPhone.text = deliveryDetails.phoneNumber;
+      controllerEmail.text = deliveryDetails.userEmail;
+      controllerAddress.text = deliveryDetails.address;
+    });
   }
 }

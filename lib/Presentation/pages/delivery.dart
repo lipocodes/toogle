@@ -25,6 +25,7 @@ class _ShopDeliveryState extends State<ShopDelivery> {
 
   Widget customBody() {
     var prov = Provider.of<DeliveryProvider>(context);
+
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: SingleChildScrollView(
@@ -131,7 +132,8 @@ class _ShopDeliveryState extends State<ShopDelivery> {
   @override
   Widget build(BuildContext context) {
     var prov = Provider.of<DeliveryProvider>(context);
-    prov.retrieveUserDetails();
+
+    prov.retrieveUserDetails(widget.acctEmail);
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(

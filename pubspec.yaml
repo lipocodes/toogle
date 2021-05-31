@@ -48,6 +48,7 @@ dependencies:
   clipboard:  
   provider:
   equatable:
+  dartz:   
 
 dev_dependencies:
   flutter_test:
