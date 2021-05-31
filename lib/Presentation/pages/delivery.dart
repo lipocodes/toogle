@@ -23,9 +23,7 @@ class _ShopDeliveryState extends State<ShopDelivery> {
     );
   }
 
-  Widget customBody() {
-    var prov = Provider.of<DeliveryProvider>(context);
-
+  Widget customBody(DeliveryProvider deliveryProvider) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: SingleChildScrollView(
@@ -42,7 +40,7 @@ class _ShopDeliveryState extends State<ShopDelivery> {
                   fontWeight: FontWeight.bold),
             ),
             customTextField(
-              controller: prov.controllerFullName,
+              controller: deliveryProvider.controllerFullName,
               enabled: true,
               minLines: 1,
               maxLines: 2,
@@ -62,7 +60,7 @@ class _ShopDeliveryState extends State<ShopDelivery> {
                   fontWeight: FontWeight.bold),
             ),
             customTextField(
-              controller: prov.controllerPhone,
+              controller: deliveryProvider.controllerPhone,
               enabled: true,
               minLines: 1,
               maxLines: 2,
@@ -86,7 +84,7 @@ class _ShopDeliveryState extends State<ShopDelivery> {
               minLines: 1,
               maxLines: 2,
               style: TextStyle(fontSize: 22.0, color: Color(0xFFbdc6cf)),
-              controller: prov.controllerEmail,
+              controller: deliveryProvider.controllerEmail,
               keyboardType: TextInputType.emailAddress,
               filled: true,
               fillColor: Colors.white,
@@ -106,7 +104,7 @@ class _ShopDeliveryState extends State<ShopDelivery> {
               enabled: true,
               minLines: 1,
               maxLines: 2,
-              controller: prov.controllerAddress,
+              controller: deliveryProvider.controllerAddress,
               keyboardType: TextInputType.text,
               filled: true,
               fillColor: Colors.white,
@@ -119,7 +117,8 @@ class _ShopDeliveryState extends State<ShopDelivery> {
                 btnTxt: "עדכון פרטים",
                 btnPadding: 20.0,
                 btnColor: Theme.of(context).primaryColor,
-                onBtnclicked: () => prov.updateUserDetails(context)),
+                onBtnclicked: () =>
+                    deliveryProvider.updateUserDetails(context)),
           ],
         ),
       ),
@@ -131,17 +130,26 @@ class _ShopDeliveryState extends State<ShopDelivery> {
 
   @override
   Widget build(BuildContext context) {
+    bool retrievedUserDetailsYet = false;
     var prov = Provider.of<DeliveryProvider>(context);
 
-    prov.retrieveUserDetails(widget.acctEmail);
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        key: prov.scaffoldKey,
-        backgroundColor: Theme.of(context).primaryColor,
-        appBar: customAppBar(),
-        body: customBody(),
-      ),
-    );
+    // prov.retrieveUserDetails(widget.acctEmail);
+    return Consumer<DeliveryProvider>(
+        builder: (context, deliveryProvider, child) {
+      if (retrievedUserDetailsYet == false) {
+        deliveryProvider.retrieveUserDetails(widget.acctEmail);
+        retrievedUserDetailsYet = true;
+      }
+
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          key: prov.scaffoldKey,
+          backgroundColor: Theme.of(context).primaryColor,
+          appBar: customAppBar(),
+          body: customBody(deliveryProvider),
+        ),
+      );
+    });
   }
 }

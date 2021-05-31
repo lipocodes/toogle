@@ -23,7 +23,8 @@ class Contact extends StatelessWidget {
   }
 
   Widget customBody(BuildContext context, ContactProvider contactProvider) {
-    var prov = Provider.of<ContactProvider>(context);
+    //var prov = Provider.of<ContactProvider>(context);
+    print("pppppppppppppppppp=" + contactProvider.state.toString());
     return Directionality(
       textDirection: TextDirection.rtl,
       child: new Column(
@@ -40,28 +41,28 @@ class Contact extends StatelessWidget {
               icon: Icon(Icons.person),
               textInputType: TextInputType.text,
               maxLines: 1,
-              controller: prov.valueName,
+              controller: contactProvider.valueName,
               labelText: "שם"),
           new SizedBox(height: 10.0),
           customListTile(
               icon: Icon(Icons.phone),
               textInputType: TextInputType.phone,
               maxLines: 1,
-              controller: prov.valuePhone,
+              controller: contactProvider.valuePhone,
               labelText: "טלפון"),
           new SizedBox(height: 10.0),
           customListTile(
               icon: Icon(Icons.email),
               textInputType: TextInputType.emailAddress,
               maxLines: 1,
-              controller: prov.valueEmail,
+              controller: contactProvider.valueEmail,
               labelText: "דואר אלקטרוני"),
           new SizedBox(height: 10.0),
           customListTile(
               icon: Icon(Icons.text_fields),
               textInputType: TextInputType.multiline,
               maxLines: 5,
-              controller: prov.valueText,
+              controller: contactProvider.valueText,
               labelText: "תוכן"),
           Padding(
             padding: const EdgeInsets.only(left: 50.0, top: 20.0, right: 50.0),
@@ -83,7 +84,7 @@ class Contact extends StatelessWidget {
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                   onPressed: () {
-                    prov.sendEmail(context);
+                    contactProvider.sendEmail(context);
                   },
                 )),
           ),
@@ -96,11 +97,8 @@ class Contact extends StatelessWidget {
   ///////////////////////////////////////////////////////////////////////////////////////////
   @override
   Widget build(BuildContext context) {
-    var counter = Provider.of<ContactProvider>(context).valueEmail;
-
     return Consumer<ContactProvider>(
         builder: (context, contactProvider, child) {
-      print("ccccccccccccccc= " + contactProvider.state.toString());
       return SafeArea(
         child: new Scaffold(
           resizeToAvoidBottomInset: false,

@@ -53,11 +53,13 @@ class DeliveryProvider extends ChangeNotifier {
     closeProgressDialog(context);
     if (result == true) {
       showSnackBar("Update Successful!", scaffoldKey);
+      changeState(UserUpdated());
       Future.delayed(const Duration(milliseconds: 3000), () {
         Navigator.pop(context);
       });
-    } else
-      showSnackBar("Update failed.  Please try later!", scaffoldKey);
+    } else {
+      changeState(UserUpdateFailed());
+    }
   }
 
   retrieveUserDetails(String acctEmail) async {
@@ -73,6 +75,7 @@ class DeliveryProvider extends ChangeNotifier {
       controllerPhone.text = deliveryDetails.phoneNumber;
       controllerEmail.text = deliveryDetails.userEmail;
       controllerAddress.text = deliveryDetails.address;
+      //changeState(UserDetails());
     });
   }
 }

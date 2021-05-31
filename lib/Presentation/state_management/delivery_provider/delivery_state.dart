@@ -8,3 +8,7 @@ abstract class DeliveryState extends Equatable {
 }
 
 class UserDetails extends DeliveryState {}
+
+class UserUpdated extends DeliveryState {}
+
+class UserUpdateFailed extends DeliveryState {}
