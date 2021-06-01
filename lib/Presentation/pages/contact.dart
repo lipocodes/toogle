@@ -24,7 +24,7 @@ class Contact extends StatelessWidget {
 
   Widget customBody(BuildContext context, ContactProvider contactProvider) {
     //var prov = Provider.of<ContactProvider>(context);
-    print("pppppppppppppppppp=" + contactProvider.state.toString());
+    //print("pppppppppppppppppp=" + contactProvider.state.toString());
     return Directionality(
       textDirection: TextDirection.rtl,
       child: new Column(

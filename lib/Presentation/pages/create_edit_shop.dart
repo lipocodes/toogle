@@ -12,7 +12,7 @@ import 'package:flutter/services.dart';
 class CreateEditShop extends StatefulWidget {
   String acctEmail;
   String acctUserID;
-  CreateEditShop(this.acctEmail, this.acctUserID);
+  CreateEditShop({this.acctEmail, this.acctUserID});
   @override
   _CreateEditShopState createState() => _CreateEditShopState();
 }

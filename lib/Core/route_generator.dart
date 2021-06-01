@@ -1,4 +1,5 @@
 import 'package:Toogle/Presentation/pages/contact.dart';
+import 'package:Toogle/Presentation/pages/create_edit_shop.dart';
 import 'package:Toogle/Presentation/pages/delivery.dart';
 import 'package:Toogle/Presentation/pages/myHomePage.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,7 @@ import 'package:flutter/material.dart';
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Getting arguments passed in while calling Navigator.pushNamed
-    final args = settings.arguments;
+    final args = settings.arguments as Map;
 
     switch (settings.name) {
       case '/':
@@ -16,11 +17,21 @@ class RouteGenerator {
           builder: (_) => Contact(),
         );
       case '/delivery':
-        if (args is String) {
+        if (args["acctEmail"] is String) {
           //the arguments passed to ShopDelivery is a String
           return MaterialPageRoute(
             builder: (_) => ShopDelivery(
-              acctEmail: args,
+              acctEmail: args["acctEmail"],
+            ),
+          );
+        }
+        return _errorRoute();
+      case '/createEditShop':
+        if (args["acctEmail"] is String && args["acctUserID"] is String) {
+          return MaterialPageRoute(
+            builder: (_) => CreateEditShop(
+              acctEmail: args["acctEmail"],
+              acctUserID: args["acctUserID"],
             ),
           );
         }

@@ -707,9 +707,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     ? true
                     : false,
             onTap: () {
-              Navigator.of(context).push(new CupertinoPageRoute(
-                  builder: (BuildContext context) =>
-                      new CreateEditShop(this.acctEmail, this.acctUserID)));
+              Navigator.pushNamed(context, '/createEditShop', arguments: {
+                'acctEmail': this.acctEmail,
+                'acctUserID': this.acctUserID
+              });
             },
             leading: new CircleAvatar(
                 child: new Icon(Icons.shopping_cart,
@@ -724,7 +725,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     : false,
             onTap: () {
               Navigator.pushNamed(context, '/delivery',
-                  arguments: this.acctEmail);
+                  arguments: {'acctEmail': this.acctEmail});
             },
             leading: new CircleAvatar(
                 child: new Icon(Icons.home, color: Colors.white, size: 15.0)),
