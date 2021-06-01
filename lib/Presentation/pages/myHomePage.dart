@@ -705,7 +705,7 @@ class _MyHomePageState extends State<MyHomePage> {
             enabled:
                 this.isLoggedIn == true && this.acctEmail != 'guest@gmail.com'
                     ? true
-                    : false,
+                    : true,
             onTap: () {
               Navigator.pushNamed(context, '/createEditShop', arguments: {
                 'acctEmail': this.acctEmail,

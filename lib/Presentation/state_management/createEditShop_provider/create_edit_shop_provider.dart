@@ -51,6 +51,7 @@ class CreateEditShopProvider extends ChangeNotifier {
   bool enableShopCategories = true;
   String acctEmail = "";
   String acctUserID = "";
+  bool retrievedShopDetailsYet = false;
 
   void changeState(CreateEditShopState createEditShopState) {
     _state = createEditShopState;
@@ -711,7 +712,7 @@ class CreateEditShopProvider extends ChangeNotifier {
     List<String> tempCategoryLevel1 = [];
 
     //if this is an existing store
-    if (shopID.length >= 16) {
+    /*if (shopID.length >= 16)*/ {
       FirebaseMethods appMethod = new FirebaseMethods();
       this.shopDetails = await appMethod.retrieveShopDetails(shopID);
 
@@ -949,6 +950,7 @@ class CreateEditShopProvider extends ChangeNotifier {
   }
 
   retrieveShopDetails() async {
+    this.acctEmail = "lior751@walla.com";
     if (this.shopID == null || this.shopID == "noShop" || this.shopID == "")
       isNewShop = true;
 
@@ -1057,7 +1059,7 @@ class CreateEditShopProvider extends ChangeNotifier {
     }
 
     //update the shopID filed for this user
-
+    this.acctUserID = "MR5Rlanw8VN9doE0MlOtX7DVzPb2";
     await firebaseMethods.updateUserShopId(this.acctUserID, this.shopID);
 
     List<String> tempCategoryLevel1 = this.categoryLevel1;
@@ -1089,20 +1091,8 @@ class CreateEditShopProvider extends ChangeNotifier {
       writeDataLocally(
           key: "creditCards",
           value: creditCardPaymentController.text.toString());
-      if (this.isNewShop == true) {
-        showSnackBar('נא לצאת ולהיכנס מחדש לחשבון כדי לראות את החנות החדשה!',
-            scaffoldKey);
-      } else {
-        showSnackBar("העדכון עבר בהצלחה", scaffoldKey);
-      }
-
-      this.enableUpdateStoreButton = false;
 
       changeState(UpdateShopDetails());
-
-      Future.delayed(const Duration(milliseconds: 3 * 1000), () {
-        Navigator.pop(context);
-      });
     } else
       showSnackBar("העדכון נכשל. נא לנסות מאוחר יותר", scaffoldKey);
   }
