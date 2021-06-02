@@ -86,7 +86,7 @@ class CreateEditShopProvider extends ChangeNotifier {
                       width: 200.0,
                       child: Row(
                         children: [
-                          RaisedButton(
+                          ElevatedButton(
                             onPressed: () {
                               for (int x = 0; x < categoryLevel1.length; x++) {
                                 String str = categoryLevel1[x];
@@ -100,6 +100,7 @@ class CreateEditShopProvider extends ChangeNotifier {
                                   return;
                                 }
                               }
+
                               if (this.controllerAddToCategory1.text.length ==
                                   0) {
                                 showSnackBar(
@@ -145,20 +146,15 @@ class CreateEditShopProvider extends ChangeNotifier {
                               selectedCategory1 = listCategory1[0];
 
                               changeState(AddedToCategory1());
-
-                              showSnackBar(
-                                  "השינוי שעשית יישמר בלחיצה על 'עדכון פרטים'",
-                                  scaffoldKey);
-                              Navigator.pop(context);
                             },
                             child: Text(
                               "הוספה",
                               style: TextStyle(color: Colors.white),
                             ),
-                            color: Colors.black,
+                            //color: Colors.black,
                           ),
                           SizedBox(width: 20),
-                          RaisedButton(
+                          ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context);
                             },
@@ -166,7 +162,7 @@ class CreateEditShopProvider extends ChangeNotifier {
                               "ביטול",
                               style: TextStyle(color: Colors.white),
                             ),
-                            color: Colors.black,
+                            // color: Colors.black,
                           ),
                         ],
                       ),
@@ -207,7 +203,7 @@ class CreateEditShopProvider extends ChangeNotifier {
                       width: 200.0,
                       child: Row(
                         children: [
-                          RaisedButton(
+                          ElevatedButton(
                             onPressed: () {
                               for (int x = 0; x < categoryLevel2.length; x++) {
                                 String str = categoryLevel2[x];
@@ -312,20 +308,15 @@ class CreateEditShopProvider extends ChangeNotifier {
                               selectedCategory2 = listCategory2[0];
 
                               changeState(AddedToCategory2());
-
-                              showSnackBar(
-                                  "השינוי שעשית יישמר בלחיצה על 'עדכון פרטים'",
-                                  scaffoldKey);
-                              Navigator.pop(context);
                             },
                             child: Text(
                               "הוספה",
                               style: TextStyle(color: Colors.white),
                             ),
-                            color: Colors.black,
+                            //color: Colors.black,
                           ),
                           SizedBox(width: 20),
-                          RaisedButton(
+                          ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context);
                             },
@@ -333,7 +324,7 @@ class CreateEditShopProvider extends ChangeNotifier {
                               "ביטול",
                               style: TextStyle(color: Colors.white),
                             ),
-                            color: Colors.black,
+                            //color: Colors.black,
                           ),
                         ],
                       ),
@@ -375,7 +366,7 @@ class CreateEditShopProvider extends ChangeNotifier {
                       width: 200.0,
                       child: Row(
                         children: [
-                          RaisedButton(
+                          ElevatedButton(
                             onPressed: () {
                               for (int x = 0; x < categoryLevel3.length; x++) {
                                 String str = categoryLevel3[x];
@@ -483,20 +474,15 @@ class CreateEditShopProvider extends ChangeNotifier {
                               selectedCategory3 = listCategory3[0];
 
                               changeState(AddedToCategory3());
-
-                              showSnackBar(
-                                  "השינוי שעשית יישמר בלחיצה על 'עדכון פרטים'",
-                                  scaffoldKey);
-                              Navigator.pop(context);
                             },
                             child: Text(
                               "הוספה",
                               style: TextStyle(color: Colors.white),
                             ),
-                            color: Colors.black,
+                            //color: Colors.black,
                           ),
                           SizedBox(width: 20),
-                          RaisedButton(
+                          ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context);
                             },
@@ -504,7 +490,7 @@ class CreateEditShopProvider extends ChangeNotifier {
                               "ביטול",
                               style: TextStyle(color: Colors.white),
                             ),
-                            color: Colors.black,
+                            //color: Colors.black,
                           ),
                         ],
                       ),
@@ -616,7 +602,6 @@ class CreateEditShopProvider extends ChangeNotifier {
     this.dropDownCategory3 = buildAndGetDropDownItems(listCategory3);
     selectedCategory3 = listCategory3[0];
     changeState(RemoveFromCategory1());
-    showSnackBar("השינוי שעשית יישמר בלחיצה על 'עדכון פרטים'", scaffoldKey);
   }
 
   removeFromCategory2(String valueToRemove) async {
@@ -677,7 +662,6 @@ class CreateEditShopProvider extends ChangeNotifier {
     this.dropDownCategory3 = buildAndGetDropDownItems(tempCategoryLevel3);
     selectedCategory3 = tempCategoryLevel3[0];
     changeState(RemoveFromCategory2());
-    showSnackBar("השינוי שעשית יישמר בלחיצה על 'עדכון פרטים'", scaffoldKey);
   }
 
   removeFromCategory3(String valueToRemove) async {
@@ -703,7 +687,6 @@ class CreateEditShopProvider extends ChangeNotifier {
 
     this.categoryLevel3 = listCategory3;
     changeState(RemoveFromCategory3());
-    showSnackBar("השינוי שעשית יישמר בלחיצה על 'עדכון פרטים'", scaffoldKey);
   }
 
   retrieveSubcategories() async {
@@ -949,8 +932,9 @@ class CreateEditShopProvider extends ChangeNotifier {
     changeState(ChangedDropDownCategory3());
   }
 
-  retrieveShopDetails() async {
-    this.acctEmail = "lior751@walla.com";
+  retrieveShopDetails(String acctEmail) async {
+    //this.acctEmail = "lior751@walla.com";
+    this.acctEmail = acctEmail;
     if (this.shopID == null || this.shopID == "noShop" || this.shopID == "")
       isNewShop = true;
 
@@ -995,7 +979,7 @@ class CreateEditShopProvider extends ChangeNotifier {
     }
   }
 
-  updateShopDetails(BuildContext context) async {
+  updateShopDetails(BuildContext context, String acctUserID) async {
     //no shop yet... We create a new shopID
     if (this.shopID == "") {
       int timeNow = new DateTime.now().microsecondsSinceEpoch;
@@ -1033,7 +1017,7 @@ class CreateEditShopProvider extends ChangeNotifier {
 
     if (creditCardPaymentController.text.length > 0) {
       // set up the button
-      Widget okButton = FlatButton(
+      Widget okButton = TextButton(
         child: Text("OK"),
         onPressed: () {
           Navigator.pop(context);
@@ -1059,7 +1043,7 @@ class CreateEditShopProvider extends ChangeNotifier {
     }
 
     //update the shopID filed for this user
-    this.acctUserID = "MR5Rlanw8VN9doE0MlOtX7DVzPb2";
+
     await firebaseMethods.updateUserShopId(this.acctUserID, this.shopID);
 
     List<String> tempCategoryLevel1 = this.categoryLevel1;
@@ -1176,6 +1160,6 @@ class CreateEditShopProvider extends ChangeNotifier {
       this.selectedCategory1 = namePartCategory1[0];
       this.dropDownCategory1 = buildAndGetDropDownItems(namePartCategory1);
     }
-    changeState(ChangedDropDownCategory());
+    changeState(ChangedDropDownCategory1());
   }
 }

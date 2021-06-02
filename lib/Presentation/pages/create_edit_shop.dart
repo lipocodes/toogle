@@ -24,20 +24,43 @@ class CreateEditShop extends StatelessWidget {
     return Consumer<CreateEditShopProvider>(
         builder: (context, createEditShopProvider, child) {
       if (createEditShopProvider.state == UpdateShopDetails()) {
+        //showSnackBar("השינוי שעשית נשמר", scaffoldKey);
+      } else if (createEditShopProvider.state == AddedToCategory1()) {
         Navigator.pop(context);
+      } else if (createEditShopProvider.state == AddedToCategory2()) {
+        Navigator.pop(context);
+      } else if (createEditShopProvider.state == AddedToCategory3()) {
+        Navigator.pop(context);
+      } else if (createEditShopProvider.state == RemoveFromCategory1()) {
+        Navigator.pop(context);
+      } else if (createEditShopProvider.state == RemoveFromCategory2()) {
+        Navigator.pop(context);
+      } else if (createEditShopProvider.state == RemoveFromCategory3()) {
+        Navigator.pop(context);
+      } else if (createEditShopProvider.state == RetrieveSubcategories()) {
+        print("New state= RetrieveSubcategories()");
+      } else if (createEditShopProvider.state == ChangedDropDownCategory1()) {
+        print("New state= ChangedDropDownCategory1()");
+      } else if (createEditShopProvider.state == ChangedDropDownCategory2()) {
+        print("New state= ChangedDropDownCategory2()");
+      } else if (createEditShopProvider.state == ChangedDropDownCategory3()) {
+        print("New state= ChangedDropDownCategory3()");
+      } else if (createEditShopProvider.state == RetrieveShopDetails()) {
+        print("New state= RetrieveShopDetails()");
       }
+
       return SafeArea(
-        child: Directionality(
-          textDirection: TextDirection.rtl,
-          child: new Scaffold(
-            key: scaffoldKey,
-            backgroundColor: Theme.of(context).primaryColor,
-            resizeToAvoidBottomInset: false,
-            appBar: customAppBar(),
-            body: customBody(context, createEditShopProvider),
-          ),
+          child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: new Scaffold(
+          key: scaffoldKey,
+          backgroundColor: Theme.of(context).primaryColor,
+          resizeToAvoidBottomInset: false,
+          appBar: customAppBar(),
+          body: customBody(
+              context, createEditShopProvider, this.acctEmail, this.acctUserID),
         ),
-      );
+      ));
     });
   }
 }
@@ -50,10 +73,13 @@ Widget customAppBar() {
 }
 
 Widget customBody(
-    BuildContext context, CreateEditShopProvider createEditShopProvider) {
+    BuildContext context,
+    CreateEditShopProvider createEditShopProvider,
+    String acctEmail,
+    String acctUserID) {
   if (createEditShopProvider.retrievedShopDetailsYet == false) {
     createEditShopProvider.retrievedShopDetailsYet = true;
-    createEditShopProvider.retrieveShopDetails();
+    createEditShopProvider.retrieveShopDetails(acctEmail);
     createEditShopProvider.retrieveSubcategories();
   }
 
@@ -544,8 +570,8 @@ Widget customBody(
                   btnTxt: "עדכון פרטים",
                   btnPadding: 20.0,
                   btnColor: Theme.of(context).primaryColor,
-                  onBtnclicked: () =>
-                      createEditShopProvider.updateShopDetails(context))
+                  onBtnclicked: () => createEditShopProvider.updateShopDetails(
+                      context, acctUserID))
               : Container(),
         ],
       ),
