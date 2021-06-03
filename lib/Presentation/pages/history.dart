@@ -1,6 +1,8 @@
+import 'package:Toogle/Presentation/state_management/shopHistory_provider.dart/shopHistory_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
 import 'package:Toogle/Core/app_localizations.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 //import 'package:Toogle/tools/app_tools.dart';
@@ -371,14 +373,17 @@ class _ShopHistoryState extends State<ShopHistory> {
     if (this.shopDetails == null || this.orderDetails == null)
       return Container();
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
-        appBar: customAppBar(),
-        body: customBody(),
-      ),
-    );
+    return Consumer<ShopHistoryProvider>(
+        builder: (context, shopHistoryProvider, child) {
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
+          appBar: customAppBar(),
+          body: customBody(),
+        ),
+      );
+    });
   }
 
   retrieveShopsOrders() async {

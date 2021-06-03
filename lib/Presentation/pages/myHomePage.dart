@@ -692,8 +692,7 @@ class _MyHomePageState extends State<MyHomePage> {
               await displayDialog(context);
               if (controllerPhone.value.text.length == 0) return;
               await prefs.setString("clientPhone", controllerPhone.value.text);
-              Navigator.of(context).push(new CupertinoPageRoute(
-                  builder: (BuildContext context) => new ShopHistory()));
+              Navigator.pushNamed(context, '/shopHistory');
             },
             leading: new CircleAvatar(
                 child:

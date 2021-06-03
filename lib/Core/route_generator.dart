@@ -1,6 +1,7 @@
 import 'package:Toogle/Presentation/pages/contact.dart';
 import 'package:Toogle/Presentation/pages/create_edit_shop.dart';
 import 'package:Toogle/Presentation/pages/delivery.dart';
+import 'package:Toogle/Presentation/pages/history.dart';
 import 'package:Toogle/Presentation/pages/myHomePage.dart';
 import 'package:flutter/material.dart';
 
@@ -36,6 +37,10 @@ class RouteGenerator {
           );
         }
         return _errorRoute();
+      case '/shopHistory':
+        return MaterialPageRoute(
+          builder: (_) => ShopHistory(),
+        );
       default:
         // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();

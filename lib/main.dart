@@ -7,6 +7,7 @@ import 'package:Toogle/Presentation/state_management/contact_provider/contact_pr
 import 'package:Toogle/Presentation/state_management/createEditShop_provider/create_edit_shop_provider.dart';
 import 'package:Toogle/Presentation/state_management/delivery_provider/delivery_provider.dart';
 import 'package:Toogle/Presentation/state_management/myHomePage_provider/myHomePage_provider.dart';
+import 'package:Toogle/Presentation/state_management/shopHistory_provider.dart/shopHistory_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'Presentation/pages/loginlogout.dart';
@@ -31,6 +32,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider.value(
           value: CreateEditShopProvider(),
+        ),
+        ChangeNotifierProvider.value(
+          value: ShopHistoryProvider(),
         ),
       ],
       child: MaterialApp(
