@@ -1,11 +1,14 @@
 import 'package:Toogle/Core/constants/app_data.dart';
-import 'package:Toogle/Presentation/state_management/contact_provider/contact_state.dart';
+import 'package:Toogle/Core/exceptions.dart';
+import 'package:Toogle/Data/repositories_impl.dart';
+import 'package:Toogle/Domain/entities/user_details.dart';
 import 'package:Toogle/Presentation/state_management/createEditShop_provider/createEditShop_state.dart';
 import 'package:Toogle/Presentation/widgets/app_tools.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class CreateEditShopProvider extends ChangeNotifier {
   CreateEditShopState _state;
@@ -95,7 +98,6 @@ class CreateEditShopProvider extends ChangeNotifier {
                                 String name = str.substring(pos + 3);
                                 if (name ==
                                     this.controllerAddToCategory1.text) {
-                                  showSnackBar("ערך זה כבר קיים", scaffoldKey);
                                   Navigator.pop(context);
                                   return;
                                 }
@@ -697,6 +699,7 @@ class CreateEditShopProvider extends ChangeNotifier {
     //if this is an existing store
     /*if (shopID.length >= 16)*/ {
       FirebaseMethods appMethod = new FirebaseMethods();
+
       this.shopDetails = await appMethod.retrieveShopDetails(shopID);
 
       //populating  this.categoryLevel1 &  this.categoryLevel2 &  this.categoryLevel3
@@ -933,50 +936,51 @@ class CreateEditShopProvider extends ChangeNotifier {
   }
 
   retrieveShopDetails(String acctEmail) async {
-    //this.acctEmail = "lior751@walla.com";
     this.acctEmail = acctEmail;
     if (this.shopID == null || this.shopID == "noShop" || this.shopID == "")
       isNewShop = true;
 
-    var querySnapshot =
-        await firebaseMethods.retrieveUserDetails(this.acctEmail);
+    Either<ServerException, List<DocumentSnapshot>> failOrSnapshot =
+        await RepositoryImpl().retrieveUserDetails(acctEmail: acctEmail);
+    failOrSnapshot.fold((exception) {
+      print("retrieveUserDetails() Exception: " + exception.toString());
+    }, (snapshot) async {
+      UserDetails userDetails = UserDetails.fromJson(snapshot[0].data);
+      this.shopID = userDetails.shopID;
 
-    var a = querySnapshot[0].data;
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////////////////
+      if (this.shopID == "noShop") {
+        List<String> temp = [];
 
-    this.shopID = a['shopID'].toString();
+        for (int i = 0; i < shopCategories.length; i++) {
+          temp.add(shopCategories[i]);
+        }
 
-    if (this.shopID == "noShop") {
-      List<String> temp = [];
+        shopCategoriesList = buildAndGetDropDownItems(temp);
 
-      for (int i = 0; i < shopCategories.length; i++) {
-        temp.add(shopCategories[i]);
+        this.selectedCategory = shopCategories[0];
+      } else {
+        Either<ServerException, List<String>> failOrSnapshot =
+            await RepositoryImpl().retrieveShopDetails(shopID);
+
+        failOrSnapshot.fold((exception) {
+          print("retrieveShopDetails() Exception: " + exception.toString());
+        }, (shopDetails) {
+          shopCategoriesList = buildAndGetDropDownItems(categoryList);
+          this.shopID = shopDetails[0];
+          this.controllerFullName.text = shopDetails[1];
+          this.controllerAddress.text = shopDetails[2];
+          this.controllerEmail.text = shopDetails[3];
+          this.controllerPhone.text = shopDetails[4];
+          this.selectedCategory = shopDetails[5];
+          this.creditCardPaymentController.text = shopDetails[9];
+          this.paypalPaymentController.text = shopDetails[10];
+          writeDataLocally(key: "creditCards", value: shopDetails[9]);
+          writeDataLocally(key: "paypal", value: shopDetails[10]);
+        });
       }
-
-      shopCategoriesList = buildAndGetDropDownItems(temp);
-
-      this.selectedCategory = shopCategories[0];
-    } else {
-      querySnapshot = await firebaseMethods.retrieveShopDetails(shopID);
-
-      for (int i = 0; i < shopCategories.length; i++) {
-        String temp = shopCategories[i];
-        categoryList.add(temp);
-      }
-      changeState(RetrieveShopDetails());
-
-      this.selectedCategory = categoryList[0];
-      shopCategoriesList = buildAndGetDropDownItems(categoryList);
-
-      this.shopID = querySnapshot[0].toString();
-      this.controllerFullName.text = querySnapshot[1].toString();
-      this.controllerAddress.text = querySnapshot[2].toString();
-      this.controllerEmail.text = querySnapshot[3].toString();
-      this.controllerPhone.text = querySnapshot[4].toString();
-      this.creditCardPaymentController.text = querySnapshot[9].toString();
-      this.paypalPaymentController.text = querySnapshot[10].toString();
-      writeDataLocally(key: "creditCards", value: querySnapshot[9].toString());
-      writeDataLocally(key: "paypal", value: querySnapshot[10].toString());
-    }
+    });
   }
 
   updateShopDetails(BuildContext context, String acctUserID) async {
@@ -984,35 +988,6 @@ class CreateEditShopProvider extends ChangeNotifier {
     if (this.shopID == "") {
       int timeNow = new DateTime.now().microsecondsSinceEpoch;
       this.shopID = timeNow.toString();
-    }
-
-    if (this.controllerFullName.text == null ||
-        this.controllerFullName.text.isEmpty) {
-      showSnackBar("נא להכניס שם חנות", scaffoldKey);
-      return;
-    }
-
-    if (this.controllerPhone.text == null ||
-        this.controllerPhone.text.isEmpty) {
-      showSnackBar("נא להכניס מספר טלפון", scaffoldKey);
-      return;
-    }
-
-    if (this.controllerEmail.text == null ||
-        this.controllerEmail.text.isEmpty) {
-      showSnackBar("נא להכניס דואר אלקטרוני", scaffoldKey);
-      return;
-    }
-
-    if (this.controllerAddress.text == null ||
-        this.controllerAddress.text.isEmpty) {
-      showSnackBar("נא להכניס את כתובת החנות", scaffoldKey);
-      return;
-    }
-
-    if (this.selectedCategory == "בחירת קטגוריה") {
-      showSnackBar("נא לבחור קטגוריה לחנות", scaffoldKey);
-      return;
     }
 
     if (creditCardPaymentController.text.length > 0) {
@@ -1043,8 +1018,10 @@ class CreateEditShopProvider extends ChangeNotifier {
     }
 
     //update the shopID filed for this user
-
-    await firebaseMethods.updateUserShopId(this.acctUserID, this.shopID);
+    bool res = await RepositoryImpl().updateUserShopID(userID, shopID);
+    if (res == true) {
+      print("updateUserShopID() successful!");
+    }
 
     List<String> tempCategoryLevel1 = this.categoryLevel1;
     if (tempCategoryLevel1.length == 0) tempCategoryLevel1.add("הכל");
@@ -1053,7 +1030,7 @@ class CreateEditShopProvider extends ChangeNotifier {
     List<String> tempCategoryLevel3 = this.categoryLevel3;
     if (tempCategoryLevel3.length == 0) tempCategoryLevel3.add("הכל");
 
-    bool result = await firebaseMethods.updateShopDetails(
+    bool result = await RepositoryImpl().updateShopDetails(
       this.shopID,
       controllerFullName.text,
       controllerAddress.text,
@@ -1077,8 +1054,7 @@ class CreateEditShopProvider extends ChangeNotifier {
           value: creditCardPaymentController.text.toString());
 
       changeState(UpdateShopDetails());
-    } else
-      showSnackBar("העדכון נכשל. נא לנסות מאוחר יותר", scaffoldKey);
+    } else {}
   }
 
   void changedDropDownCategory(String argumentSelectedCategory) {

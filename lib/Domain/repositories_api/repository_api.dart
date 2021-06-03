@@ -7,5 +7,23 @@ import 'package:flutter/material.dart';
 abstract class RepositoryAPI {
   Future<Either<ServerException, List<DocumentSnapshot>>> retrieveUserDetails(
       {@required String acctEmail});
-  Future updateUserDetails(Map<String, dynamic> map);
+  Future<bool> updateUserDetails(Map<String, dynamic> map);
+  Future<Either<ServerException, List<String>>> retrieveShopDetails(
+      String shopID);
+  Future<bool> updateShopDetails(
+    String shopID,
+    String shopName,
+    String address,
+    String phone,
+    String email,
+    String creatorID,
+    String paypal,
+    String sendReceipt,
+    String creditCards,
+    String category,
+    List<String> tempCategoryLevel1,
+    List<String> tempCategoryLevel2,
+    List<String> tempCategoryLevel3,
+  );
+  Future<bool> updateUserShopID(String userID, String shopID);
 }

@@ -3,6 +3,7 @@ import 'package:Toogle/Core/constants/app_data.dart';
 import 'package:Toogle/Presentation/state_management/createEditShop_provider/createEditShop_state.dart';
 import 'package:Toogle/Presentation/state_management/createEditShop_provider/create_edit_shop_provider.dart';
 import 'package:Toogle/Presentation/widgets/app_tools.dart';
+import 'package:Toogle/Presentation/widgets/widgets.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,18 +26,25 @@ class CreateEditShop extends StatelessWidget {
         builder: (context, createEditShopProvider, child) {
       if (createEditShopProvider.state == UpdateShopDetails()) {
         //showSnackBar("השינוי שעשית נשמר", scaffoldKey);
+        print("UpdateShopDetails() successful!");
       } else if (createEditShopProvider.state == AddedToCategory1()) {
         Navigator.pop(context);
+        print("AddedToCategory1() successful!");
       } else if (createEditShopProvider.state == AddedToCategory2()) {
         Navigator.pop(context);
+        print("AddedToCategory2() successful!");
       } else if (createEditShopProvider.state == AddedToCategory3()) {
         Navigator.pop(context);
+        print("AddedToCategory3() successful!");
       } else if (createEditShopProvider.state == RemoveFromCategory1()) {
-        Navigator.pop(context);
+        //Navigator.pop(context);
+        print("removeFromCategory1() successful!");
       } else if (createEditShopProvider.state == RemoveFromCategory2()) {
-        Navigator.pop(context);
+        //Navigator.pop(context);
+        print("removeFromCategory2() successful!");
       } else if (createEditShopProvider.state == RemoveFromCategory3()) {
-        Navigator.pop(context);
+        //Navigator.pop(context);
+        print("removeFromCategory3() successful!");
       } else if (createEditShopProvider.state == RetrieveSubcategories()) {
         print("New state= RetrieveSubcategories()");
       } else if (createEditShopProvider.state == ChangedDropDownCategory1()) {
@@ -161,17 +169,17 @@ Widget customBody(
               ),
             ],
           ),
-          new TextField(
+
+          customTextField(
             controller: createEditShopProvider.controllerFullName,
             keyboardType: TextInputType.text,
-            decoration: new InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              border: InputBorder.none,
-              hintText: "שם החנות",
-              prefixIcon: Icon(Icons.person),
-            ),
+            filled: true,
+            fillColor: Colors.white,
+            inputBorder: InputBorder.none,
+            hintText: "שם החנות",
+            prefixIcon: Icon(Icons.person),
           ),
+
           SizedBox(height: 20.0),
           Row(
             children: [
@@ -189,17 +197,17 @@ Widget customBody(
               ),
             ],
           ),
-          new TextField(
+
+          customTextField(
             controller: createEditShopProvider.controllerPhone,
             keyboardType: TextInputType.phone,
-            decoration: new InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              border: InputBorder.none,
-              hintText: "טלפון",
-              prefixIcon: Icon(Icons.phone),
-            ),
+            filled: true,
+            fillColor: Colors.white,
+            inputBorder: InputBorder.none,
+            hintText: "טלפון",
+            prefixIcon: Icon(Icons.phone),
           ),
+
           SizedBox(height: 20.0),
           Row(
             children: [
@@ -217,17 +225,17 @@ Widget customBody(
               ),
             ],
           ),
-          new TextField(
+
+          customTextField(
             controller: createEditShopProvider.controllerEmail,
             keyboardType: TextInputType.emailAddress,
-            decoration: new InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              border: InputBorder.none,
-              hintText: "דואר אלקטרוני",
-              prefixIcon: Icon(Icons.email),
-            ),
+            filled: true,
+            fillColor: Colors.white,
+            inputBorder: InputBorder.none,
+            hintText: "דואר אלקטרוני",
+            prefixIcon: Icon(Icons.email),
           ),
+
           SizedBox(height: 20.0),
           Row(
             children: [
@@ -245,19 +253,19 @@ Widget customBody(
               ),
             ],
           ),
-          new TextField(
+
+          customTextField(
             minLines: 2,
             maxLines: 2,
             controller: createEditShopProvider.controllerAddress,
             keyboardType: TextInputType.text,
-            decoration: new InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              border: InputBorder.none,
-              hintText: "כתובת",
-              prefixIcon: Icon(Icons.contact_mail),
-            ),
+            filled: true,
+            fillColor: Colors.white,
+            inputBorder: InputBorder.none,
+            hintText: "כתובת",
+            prefixIcon: Icon(Icons.contact_mail),
           ),
+
           //if no shop yet & no shop category selected yet
           if (createEditShopProvider.shopID == "noShop") ...[
             Row(
@@ -478,19 +486,19 @@ Widget customBody(
             style: TextStyle(
                 fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
           ),
-          new TextField(
+
+          customTextField(
             minLines: 1,
             maxLines: 1,
             controller: createEditShopProvider.paypalPaymentController,
             keyboardType: TextInputType.text,
-            decoration: new InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              border: InputBorder.none,
-              hintText: "חשבון פייפאל",
-              prefixIcon: Icon(Icons.contact_mail),
-            ),
+            filled: true,
+            fillColor: Colors.white,
+            inputBorder: InputBorder.none,
+            hintText: "חשבון פייפאל",
+            prefixIcon: Icon(Icons.contact_mail),
           ),
+
           new SizedBox(height: 20.0),
           GestureDetector(
             onTap: () {
@@ -551,30 +559,62 @@ Widget customBody(
             style: TextStyle(
                 fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
           ),
-          new TextField(
+
+          customTextField(
             minLines: 1,
             maxLines: 1,
             controller: createEditShopProvider.creditCardPaymentController,
             keyboardType: TextInputType.text,
-            decoration: new InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              border: InputBorder.none,
-              hintText: "דף סליקה - כרטיסי אשראי",
-              prefixIcon: Icon(Icons.contact_mail),
-            ),
+            filled: true,
+            fillColor: Colors.white,
+            inputBorder: InputBorder.none,
+            hintText: "דף סליקה - כרטיסי אשראי",
+            prefixIcon: Icon(Icons.contact_mail),
           ),
+
           new SizedBox(height: 20.0),
           createEditShopProvider.enableUpdateStoreButton == true
               ? appButton(
                   btnTxt: "עדכון פרטים",
                   btnPadding: 20.0,
                   btnColor: Theme.of(context).primaryColor,
-                  onBtnclicked: () => createEditShopProvider.updateShopDetails(
-                      context, acctUserID))
-              : Container(),
+                  onBtnclicked: () {
+                    bool res = verifyTextFields(createEditShopProvider);
+                    if (res == true) {
+                      createEditShopProvider.updateShopDetails(
+                          context, acctUserID);
+                    }
+                  })
+              : Container()
         ],
       ),
     ),
   );
+}
+
+bool verifyTextFields(CreateEditShopProvider createEditShopProvider) {
+  if (createEditShopProvider.controllerFullName.text == null ||
+      createEditShopProvider.controllerFullName.text.isEmpty) {
+    return false;
+  }
+  if (createEditShopProvider.controllerPhone.text == null ||
+      createEditShopProvider.controllerPhone.text.isEmpty) {
+    return false;
+  }
+
+  if (createEditShopProvider.controllerEmail.text == null ||
+      createEditShopProvider.controllerEmail.text.isEmpty) {
+    return false;
+  }
+
+  if (createEditShopProvider.controllerAddress.text == null ||
+      createEditShopProvider.controllerAddress.text.isEmpty) {
+    return false;
+  }
+
+  if (createEditShopProvider.selectedCategory == "בחירת קטגוריה") {
+    return false;
+  }
+
+  return true;
 }
