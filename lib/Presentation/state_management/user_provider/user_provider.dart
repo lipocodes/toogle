@@ -8,24 +8,5 @@ class UserProvider extends ChangeNotifier {
   void changeState(NewUserState newFactState) {
     _state = newFactState;
     notifyListeners(); //make all the Widgets which listen to this Provider know about the new state.
-
-    // call the usecase to get the response
-    /* Either<ServerException, Fact> failOrFact = await _getRandomFactUsecase(
-      params: Params(language: language),
-    );*/
-    // check either the usecase return exception or result
-    /*failOrFact.fold(
-      (exception) {
-        // if an exception was handled, just return error message
-        _state = NewUserError(message: exception.toString());
-        notifyListeners();
-      },
-      (fact) {
-        // if a Fact object was returned, make a new state based on it
-        addFact(fact);
-        _state = NewFactLoaded(result: fact);
-        notifyListeners();
-      },
-    );*/
   }
 }

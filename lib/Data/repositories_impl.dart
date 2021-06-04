@@ -199,4 +199,27 @@ class RepositoryImpl implements RepositoryAPI {
       return false;
     }
   }
+
+  Future<Either<ServerException, List<String>>> retrieveShopsOrders(
+      String phone) async {
+    try {
+      String userEmail = await getStringDataLocally(key: "userEmail");
+
+      final QuerySnapshot result = await firestore
+          .collection('clientsData')
+          .where('phone', isEqualTo: phone)
+          .getDocuments();
+      final List<DocumentSnapshot> snapshot = result.documents;
+
+      List tempList = snapshot[0].data['shopsOrders'];
+      List<String> shopsOrders = [];
+      for (int i = 0; i < tempList.length; i++) {
+        shopsOrders.add(tempList[i].toString());
+      }
+
+      return right(shopsOrders);
+    } catch (e) {
+      return left(ServerException("Can't retrieve order details!"));
+    }
+  }
 }

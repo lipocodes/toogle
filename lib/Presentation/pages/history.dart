@@ -14,23 +14,6 @@ class ShopHistory extends StatefulWidget {
 }
 
 class _ShopHistoryState extends State<ShopHistory> {
-  FirebaseMethods appMethod = new FirebaseMethods();
-  List<String> shopsOrders = [];
-  String shopID = "";
-  String localOrderID = "";
-  String dateOrder = "";
-  String statusOrder = "";
-  List<List<String>> shopDetails = [];
-  List<List<String>> orderDetails = [];
-  List<String> listOrderDetails = [];
-  List<String> list = [];
-  List<String> orderID = [];
-  List<String> selectedStatus = [];
-  List<String> paymentMethods = [];
-  List<String> dateOrders = [];
-  ScrollController _scrollController = new ScrollController();
-  SharedPreferences prefs;
-
   //Widget section///////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////
   Widget customAppBar() {
@@ -40,14 +23,21 @@ class _ShopHistoryState extends State<ShopHistory> {
     );
   }
 
-  Widget customBody() {
-    return ListView.separated(
-      controller: _scrollController,
+  Widget customBody(ShopHistoryProvider shopHistoryProvider) {
+    var orderDetails;
+    if (shopHistoryProvider.retrieveOrderHistoryYet != true) {
+      shopHistoryProvider.retrieveOrderHistoryYet = true;
+      orderDetails = shopHistoryProvider.retrieveShopsOrders();
+    }
+
+    return Container();
+    /*return ListView.separated(
+      controller: shopHistoryProvider.scrollController,
       reverse: true,
       separatorBuilder: (context, index) => Divider(
         color: Colors.transparent,
       ),
-      itemCount: this.orderDetails.length,
+      itemCount: shopHistoryProvider.orderDetails.length,
       itemBuilder: (context, index) => Padding(
         padding: EdgeInsets.all(8.0),
         child: Container(
@@ -79,7 +69,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.w400)),
                       SizedBox(width: 20),
-                      Text(this.orderID[index],
+                      Text(shopHistoryProvider.orderID[index],
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.w400)),
                     ],
@@ -93,20 +83,21 @@ class _ShopHistoryState extends State<ShopHistory> {
                   Row(
                     children: [
                       Icon(Icons.payment_sharp),
-                      if (this.paymentMethods[index] == "Phone")
+                      if (shopHistoryProvider.paymentMethods[index] == "Phone")
                         Text("טלפון - המוכר ייצור קשר לקבלת תשלום",
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w400,
                                 color: Colors.red)),
-                      if (this.paymentMethods[index] == "Paypal")
+                      if (shopHistoryProvider.paymentMethods[index] == "Paypal")
                         Text(
                             "פייפאל - נא לוודא שקיבלת אישור תשלום במייל מחברת פייפאל",
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w400,
                                 color: Colors.red)),
-                      if (this.paymentMethods[index] == "CreditCards")
+                      if (shopHistoryProvider.paymentMethods[index] ==
+                          "CreditCards")
                         Text(
                             "כרטיס אשראי - נא לוודא שקיבלת אישור תשלום במייל מחברת יופיי",
                             style: TextStyle(
@@ -121,7 +112,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                   Row(
                     children: [
                       Icon(Icons.date_range),
-                      Text(this.dateOrders[index],
+                      Text(shopHistoryProvider.dateOrders[index],
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.w400)),
                     ],
@@ -132,20 +123,23 @@ class _ShopHistoryState extends State<ShopHistory> {
                   Row(
                     children: [
                       Icon(Icons.star),
-                      if (this.selectedStatus[index] == "בהמתנה לטיפול") ...[
+                      if (shopHistoryProvider.selectedStatus[index] ==
+                          "בהמתנה לטיפול") ...[
                         Text("בהמתנה לטיפול",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w400)),
-                      ] else if (this.selectedStatus[index] == "בטיפול") ...[
+                      ] else if (shopHistoryProvider.selectedStatus[index] ==
+                          "בטיפול") ...[
                         Text("בטיפול",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w400)),
-                      ] else if (this.selectedStatus[index] ==
+                      ] else if (shopHistoryProvider.selectedStatus[index] ==
                           "נשלח ללקוח") ...[
                         Text("נשלח ללקוח",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w400)),
-                      ] else if (this.selectedStatus[index] == "בוטל") ...[
+                      ] else if (shopHistoryProvider.selectedStatus[index] ==
+                          "בוטל") ...[
                         Text("בוטל",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w400)),
@@ -158,7 +152,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                   Row(
                     children: [
                       Icon(Icons.person),
-                      Text(this.shopDetails[index][1],
+                      Text(shopHistoryProvider.shopDetails[index][1],
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.w400)),
                     ],
@@ -170,7 +164,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     children: [
                       Icon(Icons.email),
                       Text(
-                        this.shopDetails[index][2],
+                        shopHistoryProvider.shopDetails[index][2],
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w400),
                       ),
@@ -183,7 +177,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     children: [
                       Icon(Icons.alternate_email),
                       Text(
-                        this.shopDetails[index][3],
+                        shopHistoryProvider.shopDetails[index][3],
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w400),
                       ),
@@ -197,7 +191,8 @@ class _ShopHistoryState extends State<ShopHistory> {
                       Icon(Icons.phone),
                       GestureDetector(
                         onTap: () async {
-                          String num = this.shopDetails[index][4];
+                          String num =
+                              shopHistoryProvider.shopDetails[index][4];
                           String url = "tel:" + num;
                           if (await canLaunch(url)) {
                             await launch(url);
@@ -206,7 +201,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                           }
                         },
                         child: Text(
-                          this.shopDetails[index][4],
+                          shopHistoryProvider.shopDetails[index][4],
                           style: TextStyle(
                               fontSize: 18,
                               color: Colors.blue,
@@ -215,8 +210,9 @@ class _ShopHistoryState extends State<ShopHistory> {
                       ),
                       GestureDetector(
                         onTap: () async {
-                          String num =
-                              "+972" + this.shopDetails[index][4].substring(1);
+                          String num = "+972" +
+                              shopHistoryProvider.shopDetails[index][4]
+                                  .substring(1);
                           var whatsappUrl = "whatsapp://send?phone=$num";
                           await canLaunch(whatsappUrl)
                               ? launch(whatsappUrl)
@@ -231,7 +227,9 @@ class _ShopHistoryState extends State<ShopHistory> {
                                   //print("Pressed");
                                 }),
                             Text(
-                              "972" + this.shopDetails[index][4].substring(1),
+                              "972" +
+                                  shopHistoryProvider.shopDetails[index][4]
+                                      .substring(1),
                               style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.blue,
@@ -247,7 +245,9 @@ class _ShopHistoryState extends State<ShopHistory> {
               SizedBox(
                 height: 30,
               ),
-              for (int i = 0; i < this.orderDetails[index].length; i++) ...[
+              for (int i = 0;
+                  i < shopHistoryProvider.orderDetails[index].length;
+                  i++) ...[
                 Row(
                   children: [
                     Text(
@@ -268,7 +268,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     /*Icon(Icons.shopping_cart),*/ Text("קוד מוצר"),
                     SizedBox(width: 20),
                     Text(
-                      this.getOrderDetails(index, i, 1),
+                      shopHistoryProvider.getOrderDetails(index, i, 1),
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                     ),
@@ -279,7 +279,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     /*Icon(Icons.reorder),*/ Text("שם המוצר"),
                     SizedBox(width: 20),
                     Text(
-                      this.getOrderDetails(index, i, 2),
+                      shopHistoryProvider.getOrderDetails(index, i, 2),
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                     ),
@@ -290,7 +290,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     /*Icon(Icons.attach_money)*/ Text("מחיר המוצר"),
                     SizedBox(width: 20),
                     Text(
-                      this.getOrderDetails(index, i, 5),
+                      shopHistoryProvider.getOrderDetails(index, i, 5),
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                     ),
@@ -301,7 +301,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     /*Icon(Icons.add_shopping_cart),*/ Text("מספר הפריטים"),
                     SizedBox(width: 20),
                     Text(
-                      this.getOrderDetails(index, i, 3),
+                      shopHistoryProvider.getOrderDetails(index, i, 3),
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                     ),
@@ -312,7 +312,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     /*Icon(Icons.account_circle)*/ Text("הערות"),
                     SizedBox(width: 20),
                     Text(
-                      this.getOrderDetails(index, i, 4),
+                      shopHistoryProvider.getOrderDetails(index, i, 4),
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                     ),
@@ -320,14 +320,15 @@ class _ShopHistoryState extends State<ShopHistory> {
                 ),
                 Row(
                   children: [
-                    if (this.getOrderDetails(index, i, 6) != '0') ...[
+                    if (shopHistoryProvider.getOrderDetails(index, i, 6) !=
+                        '0') ...[
                       Text(
                         " משקל:",
                         style: TextStyle(fontSize: 20),
                       ),
                       SizedBox(width: 20),
                       Text(
-                        this.getOrderDetails(index, i, 6),
+                        shopHistoryProvider.getOrderDetails(index, i, 6),
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w400),
                       ),
@@ -337,9 +338,10 @@ class _ShopHistoryState extends State<ShopHistory> {
                       ),
                     ],
                     SizedBox(width: 20),
-                    if (this.getOrderDetails(index, i, 7) != '0') ...[
+                    if (shopHistoryProvider.getOrderDetails(index, i, 7) !=
+                        '0') ...[
                       Text(
-                        this.getOrderDetails(index, i, 7),
+                        shopHistoryProvider.getOrderDetails(index, i, 7),
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w400),
                       ),
@@ -355,86 +357,36 @@ class _ShopHistoryState extends State<ShopHistory> {
           ),
         ),
       ),
-    );
+    );*/
   }
 
   //Method section////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    retrieveShopsOrders();
-  }
 
   @override
   Widget build(BuildContext context) {
-    if (this.shopDetails == null || this.orderDetails == null)
-      return Container();
-
     return Consumer<ShopHistoryProvider>(
         builder: (context, shopHistoryProvider, child) {
-      return Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          backgroundColor: Theme.of(context).primaryColor,
-          appBar: customAppBar(),
-          body: customBody(),
-        ),
-      );
+      if (shopHistoryProvider.shopDetails == null ||
+          shopHistoryProvider.orderDetails == null) {
+        return Container();
+      } else {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: WillPopScope(
+            onWillPop: () {
+              shopHistoryProvider.retrieveOrderHistoryYet = false;
+              Navigator.pop(context);
+              return null;
+            },
+            child: Scaffold(
+              backgroundColor: Theme.of(context).primaryColor,
+              appBar: customAppBar(),
+              body: customBody(shopHistoryProvider),
+            ),
+          ),
+        );
+      }
     });
-  }
-
-  retrieveShopsOrders() async {
-    prefs = await SharedPreferences.getInstance();
-    String clientPhone = prefs.getString("clientPhone");
-    this.shopsOrders = await appMethod.retrieveShopsOrders(clientPhone);
-
-    int len = this.shopsOrders == null ? 0 : this.shopsOrders.length;
-
-    this.shopDetails = [];
-    this.orderDetails = [];
-
-    //going over the orderID^^^shopID list and creating list of the shopID & orderID
-    for (int i = 0; i < len; i++) {
-      List tempList = shopsOrders[i].split("^^^");
-
-      this.shopID = tempList[0];
-      this.shopID = this.shopID.replaceAll(' ', '');
-      String localOrderID = tempList[1];
-      this.orderID.add(localOrderID);
-
-      this.dateOrders.add(tempList[2]);
-      this.selectedStatus.add(tempList[3]);
-
-      this.paymentMethods.add(tempList[4]);
-
-      this.list = await appMethod.retrieveShopDetails(this.shopID);
-
-      this.shopDetails.add(this.list);
-      List<String> response =
-          await appMethod.retreiveOrderDetails(this.shopID, localOrderID);
-
-      this.orderDetails.add(response);
-    }
-
-    setState(() {});
-  }
-
-  getOrderDetails(int index, int i, int neededDatum) {
-    String str = this.orderDetails[index][i].toString();
-
-    List<String> list = str.split("^^^");
-
-    return list[neededDatum];
-  }
-
-  removeOrder(int index) async {
-    /*displayProgressDialog(context);
-    await appMethod.removeOrder(index).then((value) {
-      closeProgressDialog(context);
-      retrieveOrders();
-    });*/
   }
 }
