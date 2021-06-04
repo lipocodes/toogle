@@ -200,7 +200,7 @@ class RepositoryImpl implements RepositoryAPI {
     }
   }
 
-  Future<Either<ServerException, List<String>>> retrieveShopsOrders(
+  Future<Either<ServerException, List<DocumentSnapshot>>> retrieveShopsOrders(
       String phone) async {
     try {
       String userEmail = await getStringDataLocally(key: "userEmail");
@@ -211,13 +211,7 @@ class RepositoryImpl implements RepositoryAPI {
           .getDocuments();
       final List<DocumentSnapshot> snapshot = result.documents;
 
-      List tempList = snapshot[0].data['shopsOrders'];
-      List<String> shopsOrders = [];
-      for (int i = 0; i < tempList.length; i++) {
-        shopsOrders.add(tempList[i].toString());
-      }
-
-      return right(shopsOrders);
+      return right(snapshot);
     } catch (e) {
       return left(ServerException("Can't retrieve order details!"));
     }

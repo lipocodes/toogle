@@ -8,24 +8,24 @@ class OrderHistoryDetails extends Equatable {
   final String fullName;
   final String location;
   final String phone;
-  final List<String> shopOrders;
+  final List<dynamic> shopsOrders;
 
   OrderHistoryDetails({
     @required this.fullName,
     @required this.location,
     @required this.phone,
-    @required this.shopOrders,
+    @required this.shopsOrders,
   });
 
   @override
-  List<Object> get props => [fullName, location, phone, shopOrders];
+  List<Object> get props => [fullName, location, phone, shopsOrders];
 
   factory OrderHistoryDetails.fromJson(Map<String, dynamic> json) {
     return OrderHistoryDetails(
         fullName: json['fullName'],
         location: json['location'],
         phone: json['phone'],
-        shopOrders: json["shopOrders"]);
+        shopsOrders: json['shopsOrders']);
   }
 
   Map<String, dynamic> toJson() {
@@ -33,7 +33,7 @@ class OrderHistoryDetails extends Equatable {
       'fullName': this.fullName,
       'location': this.location,
       'phone': this.phone,
-      'shopOrders': this.shopOrders
+      'shopOrders': this.shopsOrders
     };
   }
 }

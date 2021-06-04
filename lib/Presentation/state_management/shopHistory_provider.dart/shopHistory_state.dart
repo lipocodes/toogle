@@ -7,10 +7,6 @@ abstract class ShopHistoryState extends Equatable {
   List<Object> get props => [];
 }
 
-class OrderDetailsRetrieved extends ShopHistoryState {
-  final List<String> orderList;
-  OrderDetailsRetrieved({@required this.orderList});
-  List<Object> get props => [orderList];
-}
+class OrderDetailsRetrieved extends ShopHistoryState {}
 
 class OrderDetailsError extends ShopHistoryState {}

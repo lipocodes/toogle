@@ -1,3 +1,4 @@
+import 'package:Toogle/Core/constants/app_data.dart';
 import 'package:Toogle/Presentation/state_management/shopHistory_provider.dart/shopHistory_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
@@ -30,14 +31,13 @@ class _ShopHistoryState extends State<ShopHistory> {
       orderDetails = shopHistoryProvider.retrieveShopsOrders();
     }
 
-    return Container();
-    /*return ListView.separated(
+    return ListView.separated(
       controller: shopHistoryProvider.scrollController,
       reverse: true,
       separatorBuilder: (context, index) => Divider(
         color: Colors.transparent,
       ),
-      itemCount: shopHistoryProvider.orderDetails.length,
+      itemCount: shopHistoryProvider.orderID.length,
       itemBuilder: (context, index) => Padding(
         padding: EdgeInsets.all(8.0),
         child: Container(
@@ -56,7 +56,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                       Text(
                         "הזמנות",
                         style: TextStyle(
-                          fontSize: 22,
+                          fontSize: 18,
                           fontWeight: FontWeight.w800,
                           decoration: TextDecoration.underline,
                         ),
@@ -67,18 +67,18 @@ class _ShopHistoryState extends State<ShopHistory> {
                     children: [
                       Text("מספר הזמנה",
                           style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w400)),
-                      SizedBox(width: 20),
+                              fontSize: 16, fontWeight: FontWeight.w400)),
+                      SizedBox(width: 16),
                       Text(shopHistoryProvider.orderID[index],
                           style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w400)),
+                              fontSize: 16, fontWeight: FontWeight.w400)),
                     ],
                   ),
                   SizedBox(
-                    height: 10.0,
+                    height: 8.0,
                   ),
                   SizedBox(
-                    height: 10.0,
+                    height: 8.0,
                   ),
                   Row(
                     children: [
@@ -86,14 +86,14 @@ class _ShopHistoryState extends State<ShopHistory> {
                       if (shopHistoryProvider.paymentMethods[index] == "Phone")
                         Text("טלפון - המוכר ייצור קשר לקבלת תשלום",
                             style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w400,
                                 color: Colors.red)),
                       if (shopHistoryProvider.paymentMethods[index] == "Paypal")
                         Text(
                             "פייפאל - נא לוודא שקיבלת אישור תשלום במייל מחברת פייפאל",
                             style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w400,
                                 color: Colors.red)),
                       if (shopHistoryProvider.paymentMethods[index] ==
@@ -101,7 +101,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                         Text(
                             "כרטיס אשראי - נא לוודא שקיבלת אישור תשלום במייל מחברת יופיי",
                             style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w400,
                                 color: Colors.red))
                     ],
@@ -152,7 +152,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                   Row(
                     children: [
                       Icon(Icons.person),
-                      Text(shopHistoryProvider.shopDetails[index][1],
+                      Text(shopHistoryProvider.shopName[index],
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.w400)),
                     ],
@@ -164,20 +164,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     children: [
                       Icon(Icons.email),
                       Text(
-                        shopHistoryProvider.shopDetails[index][2],
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w400),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  Row(
-                    children: [
-                      Icon(Icons.alternate_email),
-                      Text(
-                        shopHistoryProvider.shopDetails[index][3],
+                        shopHistoryProvider.shopEmail[index],
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w400),
                       ),
@@ -191,8 +178,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                       Icon(Icons.phone),
                       GestureDetector(
                         onTap: () async {
-                          String num =
-                              shopHistoryProvider.shopDetails[index][4];
+                          String num = shopHistoryProvider.shopPhone[index];
                           String url = "tel:" + num;
                           if (await canLaunch(url)) {
                             await launch(url);
@@ -201,7 +187,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                           }
                         },
                         child: Text(
-                          shopHistoryProvider.shopDetails[index][4],
+                          shopHistoryProvider.shopPhone[index],
                           style: TextStyle(
                               fontSize: 18,
                               color: Colors.blue,
@@ -228,7 +214,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                                 }),
                             Text(
                               "972" +
-                                  shopHistoryProvider.shopDetails[index][4]
+                                  shopHistoryProvider.shopPhone[index]
                                       .substring(1),
                               style: TextStyle(
                                   fontSize: 18,
@@ -242,7 +228,8 @@ class _ShopHistoryState extends State<ShopHistory> {
                   ),
                 ],
               ),
-              SizedBox(
+
+              /*SizedBox(
                 height: 30,
               ),
               for (int i = 0;
@@ -352,12 +339,12 @@ class _ShopHistoryState extends State<ShopHistory> {
                     ],
                   ],
                 ),
-              ],
+              ],*/
             ],
           ),
         ),
       ),
-    );*/
+    );
   }
 
   //Method section////////////////////////////////////////////////////////

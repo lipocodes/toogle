@@ -26,6 +26,6 @@ abstract class RepositoryAPI {
     List<String> tempCategoryLevel3,
   );
   Future<bool> updateUserShopID(String userID, String shopID);
-  Future<Either<ServerException, List<String>>> retrieveShopsOrders(
+  Future<Either<ServerException, List<DocumentSnapshot>>> retrieveShopsOrders(
       String phone);
 }
