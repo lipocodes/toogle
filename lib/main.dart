@@ -25,6 +25,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
+          value: MyHomePageProvider(),
+        ),
+        ChangeNotifierProvider.value(
           value: ContactProvider(),
         ),
         ChangeNotifierProvider.value(

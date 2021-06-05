@@ -30,8 +30,7 @@ class _ShopHistoryState extends State<ShopHistory> {
       shopHistoryProvider.retrieveOrderHistoryYet = true;
       orderDetails = shopHistoryProvider.retrieveShopsOrders();
     }
-    print("pppppppppppppppppp=" +
-        shopHistoryProvider.orderDetails.length.toString());
+
     return ListView.separated(
       controller: shopHistoryProvider.scrollController,
       reverse: true,
