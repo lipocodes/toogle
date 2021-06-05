@@ -24,6 +24,7 @@ class ItemDetail extends StatefulWidget {
   String itemColor;
   String itemWeightKilos;
   String itemWeightGrams;
+  BuildContext context;
 
   ItemDetail(
       {this.itemId,
@@ -43,45 +44,6 @@ class ItemDetail extends StatefulWidget {
 }
 
 class _ItemDetailState extends State<ItemDetail> {
-  final scaffoldKey = new GlobalKey<ScaffoldState>();
-  SharedPreferences prefs;
-  int cartContentsSize = 0;
-  bool isLoggedIn = false;
-  String selectedWeightGrams = "-1";
-  String selectedWeightKilos = "-1";
-  List<DropdownMenuItem<String>> dropDownWeightGrams;
-  List<DropdownMenuItem<String>> dropDownWeightKilos;
-  String itemQuantity = "1";
-  String itemByWeightPrice = "";
-  String itemByQuantityPrice = "";
-  List<String> categoryWeightGrams = [
-    "0",
-    "100",
-    "200",
-    "300",
-    "400",
-    "500",
-    "600",
-    "700",
-    "800",
-    "900"
-  ];
-  List<String> categoryWeightKilos = [
-    '0',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '10'
-  ];
-  TextEditingController controllerRemarks = new TextEditingController();
-  Size screenSize;
-
   // Widget section //////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////
   Widget customFloatingButton(ItemDetailProvider itemDetailProvider) {
@@ -90,10 +52,7 @@ class _ItemDetailState extends State<ItemDetail> {
       children: <Widget>[
         new FloatingActionButton(
           onPressed: () async {
-            Navigator.of(context).push(new CupertinoPageRoute(
-                builder: (BuildContext context) => new ShopCart()));
-            //retrievePrefs();
-            //setState(() {});
+            itemDetailProvider.orderNow(widget.context);
           },
           child: new Icon(Icons.shopping_cart),
         ),
@@ -101,9 +60,9 @@ class _ItemDetailState extends State<ItemDetail> {
           radius: 10.0,
           backgroundColor: Colors.red,
           child: new Text(
-            this.cartContentsSize == null
+            itemDetailProvider.cartContentsSize == null
                 ? "0"
-                : this.cartContentsSize.toString(),
+                : itemDetailProvider.cartContentsSize.toString(),
             style: new TextStyle(color: Colors.white, fontSize: 12.0),
           ),
         )
@@ -125,34 +84,10 @@ class _ItemDetailState extends State<ItemDetail> {
           children: <Widget>[
             GestureDetector(
               onTap: (() {
-                Navigator.pushNamed(context, '/shopCart', arguments: {
-                  'itemId': itemDetailProvider.itemId,
-                  'itemName': itemDetailProvider.itemName,
-                  'itemPrice': itemDetailProvider.itemByWeightPrice.length == 0
-                      ? itemDetailProvider.itemByQuantityPrice
-                      : itemDetailProvider.itemByWeightPrice,
-                  'itemDescription': itemDetailProvider.itemDescription,
-                  'itemImage': itemDetailProvider.itemImage,
-                  'itemColor': itemDetailProvider.itemColor,
-                  'itemSize': itemDetailProvider.itemSize,
-                  'itemWeightKilos': (itemDetailProvider.selectedWeightKilos !=
-                          itemDetailProvider.selectedWeightKilos)
-                      ? itemDetailProvider.selectedWeightKilos
-                      : itemDetailProvider.selectedWeightKilos,
-                  'itemWeightGrams': (itemDetailProvider.selectedWeightGrams !=
-                          itemDetailProvider.selectedWeightGrams)
-                      ? itemDetailProvider.selectedWeightGrams
-                      : itemDetailProvider.selectedWeightGrams,
-                  'itemQuant': itemDetailProvider.itemQuantity,
-                  'itemRemarks':
-                      itemDetailProvider.controllerRemarks.text.length == 0
-                          ? "אין הערות"
-                          : itemDetailProvider.controllerRemarks.text,
-                  'itemRating': itemDetailProvider.itemRating
-                });
+                itemDetailProvider.orderNow(widget.context);
               }),
               child: new Container(
-                width: (screenSize.width - 20),
+                width: (itemDetailProvider.screenSize.width - 20),
                 child: new Text(
                   "לחץ להוספה לעגלה",
                   textAlign: TextAlign.center,
@@ -170,6 +105,12 @@ class _ItemDetailState extends State<ItemDetail> {
   }
 
   Widget customAppBar(ItemDetailProvider itemDetailProvider) {
+    if (itemDetailProvider.retrievedItemDetails == false) {
+      itemDetailProvider.retrievedItemDetails = true;
+      itemDetailProvider.retrievePrefs();
+      itemDetailProvider.screenSize = MediaQuery.of(context).size;
+    }
+
     return new AppBar(
       title: new Text(
         "פרטי המוצר",
@@ -202,7 +143,7 @@ class _ItemDetailState extends State<ItemDetail> {
               ),
               new Card(
                 child: new Container(
-                  width: screenSize.width,
+                  width: itemDetailProvider.screenSize.width,
                   margin: new EdgeInsets.only(left: 20.0, right: 20.0),
                   child: new Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,16 +152,18 @@ class _ItemDetailState extends State<ItemDetail> {
                         height: 10.0,
                       ),
                       new Text(
-                        widget.itemName,
+                        itemDetailProvider.itemName,
                         style: new TextStyle(
                             fontSize: 18.0, fontWeight: FontWeight.w700),
                       ),
                       Row(
                         children: [
                           new Text(
-                            this.itemByWeightPrice.length == 0
-                                ? this.itemByQuantityPrice
-                                : this.itemByWeightPrice + " " + "ש'ח",
+                            itemDetailProvider.itemByWeightPrice.length == 0
+                                ? itemDetailProvider.itemByQuantityPrice
+                                : itemDetailProvider.itemByWeightPrice +
+                                    " " +
+                                    "ש'ח",
                             style: new TextStyle(
                                 fontSize: 20.0,
                                 color: Colors.red[500],
@@ -231,10 +174,12 @@ class _ItemDetailState extends State<ItemDetail> {
                       new SizedBox(
                         height: 10.0,
                       ),
-                      ((this.selectedWeightGrams != '-1' &&
-                                  this.selectedWeightGrams != '0') ||
-                              (this.selectedWeightKilos != '-1' &&
-                                  this.selectedWeightKilos != '0'))
+                      ((itemDetailProvider.selectedWeightGrams != '-1' &&
+                                  itemDetailProvider.selectedWeightGrams !=
+                                      '0') ||
+                              (itemDetailProvider.selectedWeightKilos != '-1' &&
+                                  itemDetailProvider.selectedWeightKilos !=
+                                      '0'))
                           ? Row(
                               children: [
                                 Column(
@@ -248,10 +193,12 @@ class _ItemDetailState extends State<ItemDetail> {
                                     ),
                                     productsDropDown(
                                         textTitle: "משקל בק'ג",
-                                        selectedItem: this.selectedWeightKilos,
-                                        dropDownItems: dropDownWeightKilos,
-                                        changedDropDownItems:
-                                            changedDropDownWeightKilos)
+                                        selectedItem: itemDetailProvider
+                                            .selectedWeightKilos,
+                                        dropDownItems: itemDetailProvider
+                                            .dropDownWeightKilos,
+                                        changedDropDownItems: itemDetailProvider
+                                            .changedDropDownWeightKilos)
                                   ],
                                 ),
                                 SizedBox(width: 20),
@@ -266,10 +213,12 @@ class _ItemDetailState extends State<ItemDetail> {
                                     ),
                                     productsDropDown(
                                         textTitle: "משקל בגרם",
-                                        selectedItem: this.selectedWeightGrams,
-                                        dropDownItems: dropDownWeightGrams,
-                                        changedDropDownItems:
-                                            changedDropDownWeightGrams),
+                                        selectedItem: itemDetailProvider
+                                            .selectedWeightGrams,
+                                        dropDownItems: itemDetailProvider
+                                            .dropDownWeightGrams,
+                                        changedDropDownItems: itemDetailProvider
+                                            .changedDropDownWeightGrams),
                                   ],
                                 )
                               ],
@@ -278,7 +227,7 @@ class _ItemDetailState extends State<ItemDetail> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    incrementQuantity();
+                                    itemDetailProvider.incrementQuantity();
                                   },
                                   child: new Icon(
                                     Icons.add_circle_outline,
@@ -292,7 +241,7 @@ class _ItemDetailState extends State<ItemDetail> {
                                     right: 10.0,
                                   ),
                                   child: new Text(
-                                    this.itemQuantity,
+                                    itemDetailProvider.itemQuantity,
                                     style: new TextStyle(
                                       fontSize: 24.0,
                                       color: Colors.black38,
@@ -301,7 +250,7 @@ class _ItemDetailState extends State<ItemDetail> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    decrementQuantity();
+                                    itemDetailProvider.decrementQuantity();
                                   },
                                   child: new Icon(
                                     Icons.remove_circle_outline,
@@ -318,19 +267,19 @@ class _ItemDetailState extends State<ItemDetail> {
               ),
               new Card(
                 child: new Container(
-                  width: screenSize.width,
+                  width: itemDetailProvider.screenSize.width,
                   height: 150.0,
                   child: new ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: widget.itemImages.length,
+                      itemCount: itemDetailProvider.itemImages.length,
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () async {
                             await Navigator.of(context).push(
                                 new CupertinoPageRoute(
                                     builder: (BuildContext context) =>
-                                        new ImageInLarge(
-                                            widget.itemImages[index])));
+                                        new ImageInLarge(itemDetailProvider
+                                            .itemImages[index])));
                           },
                           child: new Stack(
                             alignment: Alignment.center,
@@ -359,7 +308,7 @@ class _ItemDetailState extends State<ItemDetail> {
               ),
               new Card(
                 child: new Container(
-                  width: screenSize.width,
+                  width: itemDetailProvider.screenSize.width,
                   margin: new EdgeInsets.only(left: 20.0, right: 20.0),
                   child: new Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -376,7 +325,7 @@ class _ItemDetailState extends State<ItemDetail> {
                         height: 10.0,
                       ),
                       new Text(
-                        widget.itemDescription,
+                        itemDetailProvider.itemDescription,
                         style: new TextStyle(
                             fontSize: 14.0, fontWeight: FontWeight.w400),
                       ),
@@ -384,7 +333,7 @@ class _ItemDetailState extends State<ItemDetail> {
                         height: 10.0,
                       ),
                       TextField(
-                        controller: this.controllerRemarks,
+                        controller: itemDetailProvider.controllerRemarks,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'בקשות מיוחדות מהחנות',
@@ -402,7 +351,7 @@ class _ItemDetailState extends State<ItemDetail> {
                         ),
                       ),
                       TextField(
-                        controller: this.controllerRemarks,
+                        controller: itemDetailProvider.controllerRemarks,
                         decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: 'בקשות מיוחדות מהחנות'),
@@ -424,18 +373,29 @@ class _ItemDetailState extends State<ItemDetail> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    retrievePrefs();
   }
 
   @override
   Widget build(BuildContext context) {
-    screenSize = MediaQuery.of(context).size;
+    widget.context = context;
     return Consumer<ItemDetailProvider>(
         builder: (context, itemDetailProvider, child) {
+      itemDetailProvider.itemId = widget.itemId;
+      itemDetailProvider.itemImage = widget.itemImage;
+      itemDetailProvider.itemName = widget.itemName;
+      itemDetailProvider.itemPrice = widget.itemPrice;
+      itemDetailProvider.itemRating = widget.itemRating;
+      itemDetailProvider.itemImages = widget.itemImages;
+      itemDetailProvider.itemDescription = widget.itemDescription;
+      itemDetailProvider.itemSize = widget.itemSize;
+      itemDetailProvider.itemColor = widget.itemColor;
+      itemDetailProvider.itemWeightKilos = widget.itemWeightKilos;
+      itemDetailProvider.itemWeightGrams = widget.itemWeightGrams;
+
       return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          key: scaffoldKey,
+          key: itemDetailProvider.scaffoldKey,
           appBar: customAppBar(itemDetailProvider),
           body: customBody(itemDetailProvider),
           floatingActionButton: customFloatingButton(itemDetailProvider),
@@ -445,103 +405,5 @@ class _ItemDetailState extends State<ItemDetail> {
         ),
       );
     });
-  }
-
-  incrementQuantity() {
-    setState(() {
-      int num = int.parse(this.itemQuantity);
-      if (num < 10) num++;
-      itemQuantity = num.toString();
-      this.itemByQuantityPrice =
-          (double.parse(this.itemQuantity) * double.parse(widget.itemPrice))
-              .toStringAsFixed(2);
-    });
-  }
-
-  decrementQuantity() {
-    setState(() {
-      int num = int.parse(itemQuantity);
-      if (num > 1) num--;
-      this.itemQuantity = num.toString();
-      this.itemByQuantityPrice =
-          (double.parse(this.itemQuantity) * double.parse(widget.itemPrice))
-              .toStringAsFixed(2);
-    });
-  }
-
-  void changedDropDownWeightKilos(String argumentSelectedCategory) {
-    if (argumentSelectedCategory == "0" && selectedWeightGrams == "0") {
-      showSnackBar("לא ייתכן משקל של 0 ק'ג ו 0 גרם", scaffoldKey);
-    } else {
-      setState(() {
-        selectedWeightKilos = argumentSelectedCategory;
-        double weightInKilos = double.parse(selectedWeightKilos) +
-            double.parse(selectedWeightGrams) / 1000;
-        double itemPrice = double.parse(widget.itemPrice);
-        double price = weightInKilos * itemPrice;
-        this.itemByWeightPrice = price.toStringAsFixed(2);
-      });
-    }
-  }
-
-  void changedDropDownWeightGrams(String argumentSelectedCategory) {
-    if (argumentSelectedCategory == "0" && selectedWeightGrams == "0") {
-      showSnackBar("לא ייתכן משקל של 0 ק'ג ו 0 גרם", scaffoldKey);
-    } else {
-      setState(() {
-        selectedWeightGrams = argumentSelectedCategory;
-        double weightInKilos = double.parse(selectedWeightKilos) +
-            double.parse(selectedWeightGrams) / 1000;
-        double itemPrice = double.parse(widget.itemPrice);
-        double price = weightInKilos * itemPrice;
-        this.itemByWeightPrice = price.toStringAsFixed(2);
-      });
-    }
-  }
-
-  void orderNow() async {
-    await Navigator.of(context).push(new CupertinoPageRoute(
-        builder: (BuildContext context) => new ShopCart(
-            itemId: widget.itemId,
-            itemName: widget.itemName,
-            itemPrice: this.itemByWeightPrice.length == 0
-                ? this.itemByQuantityPrice
-                : this.itemByWeightPrice,
-            itemDescription: widget.itemDescription,
-            itemImage: widget.itemImage,
-            itemColor: widget.itemColor,
-            itemSize: widget.itemSize,
-            itemWeightKilos: (selectedWeightKilos != selectedWeightKilos)
-                ? selectedWeightKilos
-                : selectedWeightKilos,
-            itemWeightGrams: (selectedWeightGrams != selectedWeightGrams)
-                ? selectedWeightGrams
-                : selectedWeightGrams,
-            itemQuant: this.itemQuantity,
-            itemRemarks: this.controllerRemarks.text.length == 0
-                ? "אין הערות"
-                : this.controllerRemarks.text,
-            itemRating: widget.itemRating)));
-    retrievePrefs();
-    setState(() {});
-  }
-
-  retrievePrefs() async {
-    this.itemByQuantityPrice = widget.itemPrice;
-    prefs = await SharedPreferences.getInstance();
-    this.cartContentsSize = prefs.getInt("cartCounter");
-    this.isLoggedIn = await getBoolDataLocally(key: loggedIn);
-
-    this.dropDownWeightKilos = buildAndGetDropDownItems(categoryWeightKilos);
-    this.selectedWeightKilos = widget.itemWeightKilos == "null"
-        ? categoryWeightKilos[0]
-        : widget.itemWeightKilos;
-
-    this.dropDownWeightGrams = buildAndGetDropDownItems(categoryWeightGrams);
-    this.selectedWeightGrams = widget.itemWeightGrams == "null"
-        ? categoryWeightGrams[0]
-        : widget.itemWeightGrams;
-
-    setState(() {});
   }
 }

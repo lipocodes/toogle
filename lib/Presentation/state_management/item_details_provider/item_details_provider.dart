@@ -60,6 +60,7 @@ class ItemDetailProvider extends ChangeNotifier {
   ];
   TextEditingController controllerRemarks = new TextEditingController();
   Size screenSize;
+  bool retrievedItemDetails = false;
 
   void changeState(ItemDetailState itemDetailState) {
     _state = itemDetailState;
@@ -134,6 +135,31 @@ class ItemDetailProvider extends ChangeNotifier {
         : this.itemWeightGrams;
 
     changeState(RetrievePrefs());
+  }
+
+  void orderNow(BuildContext context) async {
+    Navigator.pushNamed(context, '/shopCart', arguments: {
+      'itemId': this.itemId,
+      'itemName': this.itemName,
+      'itemPrice': this.itemByWeightPrice.length == 0
+          ? this.itemByQuantityPrice
+          : this.itemByWeightPrice,
+      'itemDescription': this.itemDescription,
+      'itemImage': this.itemImage,
+      //'itemColor': this.itemColor,
+      //'itemSize': this.itemSize,
+      'itemWeightKilos': (this.selectedWeightKilos != this.selectedWeightKilos)
+          ? this.selectedWeightKilos
+          : this.selectedWeightKilos,
+      'itemWeightGrams': (this.selectedWeightGrams != this.selectedWeightGrams)
+          ? this.selectedWeightGrams
+          : this.selectedWeightGrams,
+      'itemQuant': this.itemQuantity,
+      'itemRemarks': this.controllerRemarks.text.length == 0
+          ? "אין הערות"
+          : this.controllerRemarks.text,
+      'itemRating': this.itemRating
+    });
   }
 
 //////End methods
