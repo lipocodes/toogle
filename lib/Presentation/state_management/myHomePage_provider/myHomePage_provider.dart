@@ -65,6 +65,7 @@ class MyHomePageProvider extends ChangeNotifier {
   TextEditingController controllerPhone = TextEditingController();
   TextEditingController controllerShopNumber = TextEditingController();
   String defaultShopName = "ברכת המזון";
+  bool retrievedCustomAppBarYet = false;
 
   switchShop(String numberShop) async {
     int cartCounter;

@@ -127,19 +127,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return GestureDetector(
       onTap: () async {
-        await Navigator.of(context).push(new CupertinoPageRoute(
-            builder: (BuildContext context) => new ItemDetail(
-                itemId: id,
-                itemImage: serviceImages[0],
-                itemName: document[productTitle],
-                itemPrice: price,
-                itemRating: rating,
-                itemImages: serviceImages,
-                itemDescription: description,
-                itemSize: size,
-                itemColor: color,
-                itemWeightKilos: procductWeightKilos,
-                itemWeightGrams: procductWeightGrams)));
+        Navigator.pushNamed(context, '/itemDetail', arguments: {
+          'itemId': id,
+          'itemImage': serviceImages[0],
+          'itemName': document[productTitle],
+          'itemPrice': price,
+          'itemRating': rating,
+          'itemImages': serviceImages,
+          'itemDescription': description,
+          'itemSize': size,
+          'itemColor': color,
+          'itemWeightKilos': procductWeightKilos,
+          'itemWeightGrams': procductWeightGrams
+        });
 
         retrievePrefs();
         setState(() {});
