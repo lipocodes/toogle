@@ -28,4 +28,6 @@ abstract class RepositoryAPI {
   Future<bool> updateUserShopID(String userID, String shopID);
   Future<Either<ServerException, List<DocumentSnapshot>>> retrieveShopsOrders(
       String phone);
+  Future<Either<ServerException, DocumentSnapshot>> retreiveOrderDetails(
+      String shopID, String orderID);
 }

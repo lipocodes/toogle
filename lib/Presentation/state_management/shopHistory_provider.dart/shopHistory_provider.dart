@@ -63,8 +63,10 @@ class ShopHistoryProvider extends ChangeNotifier {
         for (int k = 0; k < list1.length; k++) {
           list2.add(list1[k].toString());
         }
+
         for (int k = 0; k < list2.length; k++) {
           List<String> list3 = list2[k].split("^^^");
+
           this.shopID.add(list3[0]);
           this.orderID.add(list3[1]);
           this.paymentMethods.add(list3[4]);
@@ -83,40 +85,24 @@ class ShopHistoryProvider extends ChangeNotifier {
             this.shopEmail.add(list[3]);
             this.shopPhone.add(list[4]);
           });
+
+          Either<ServerException, DocumentSnapshot> failOrSuccess =
+              await RepositoryImpl().retreiveOrderDetails(list3[0], list3[1]);
+          failOrSuccess.fold((exception) {
+            // if an exception was handled, just return error message
+            _state = OrderDetailsError();
+            notifyListeners();
+          }, (snapshot) {
+            String d = snapshot.data['0'];
+            List<String> dd = d.split("^^^");
+            this.orderDetails.add(dd);
+          });
         }
-        // if a Fact object was returned, make a new state based on it
+
         _state = OrderDetailsRetrieved();
         notifyListeners();
       },
     );
-
-    /*int len = this.shopsOrders == null ? 0 : this.shopsOrders.length;
-
-    this.shopDetails = [];
-    this.orderDetails = [];
-
-    //going over the orderID^^^shopID list and creating list of the shopID & orderID
-    for (int i = 0; i < len; i++) {
-      List tempList = shopsOrders[i].split("^^^");
-
-      this.shopID = tempList[0];
-      this.shopID = this.shopID.replaceAll(' ', '');
-      String localOrderID = tempList[1];
-      this.orderID.add(localOrderID);
-
-      this.dateOrders.add(tempList[2]);
-      this.selectedStatus.add(tempList[3]);
-
-      this.paymentMethods.add(tempList[4]);
-
-      this.list = await appMethod.retrieveShopDetails(this.shopID);
-
-      this.shopDetails.add(this.list);
-      List<String> response =
-          await appMethod.retreiveOrderDetails(this.shopID, localOrderID);
-     
-      this.orderDetails.add(response);
-    }*/
 
     return this.orderDetails;
   }

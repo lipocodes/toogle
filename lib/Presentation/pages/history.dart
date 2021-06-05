@@ -30,7 +30,8 @@ class _ShopHistoryState extends State<ShopHistory> {
       shopHistoryProvider.retrieveOrderHistoryYet = true;
       orderDetails = shopHistoryProvider.retrieveShopsOrders();
     }
-
+    print("pppppppppppppppppp=" +
+        shopHistoryProvider.orderDetails.length.toString());
     return ListView.separated(
       controller: shopHistoryProvider.scrollController,
       reverse: true,
@@ -228,12 +229,11 @@ class _ShopHistoryState extends State<ShopHistory> {
                   ),
                 ],
               ),
-
-              /*SizedBox(
+              SizedBox(
                 height: 30,
               ),
               for (int i = 0;
-                  i < shopHistoryProvider.orderDetails[index].length;
+                  i < shopHistoryProvider.orderDetails.length;
                   i++) ...[
                 Row(
                   children: [
@@ -255,7 +255,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     /*Icon(Icons.shopping_cart),*/ Text("קוד מוצר"),
                     SizedBox(width: 20),
                     Text(
-                      shopHistoryProvider.getOrderDetails(index, i, 1),
+                      shopHistoryProvider.orderDetails[index][1],
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                     ),
@@ -266,7 +266,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     /*Icon(Icons.reorder),*/ Text("שם המוצר"),
                     SizedBox(width: 20),
                     Text(
-                      shopHistoryProvider.getOrderDetails(index, i, 2),
+                      shopHistoryProvider.orderDetails[index][2],
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                     ),
@@ -277,7 +277,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     /*Icon(Icons.attach_money)*/ Text("מחיר המוצר"),
                     SizedBox(width: 20),
                     Text(
-                      shopHistoryProvider.getOrderDetails(index, i, 5),
+                      shopHistoryProvider.orderDetails[index][5],
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                     ),
@@ -288,7 +288,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     /*Icon(Icons.add_shopping_cart),*/ Text("מספר הפריטים"),
                     SizedBox(width: 20),
                     Text(
-                      shopHistoryProvider.getOrderDetails(index, i, 3),
+                      shopHistoryProvider.orderDetails[index][3],
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                     ),
@@ -299,7 +299,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     /*Icon(Icons.account_circle)*/ Text("הערות"),
                     SizedBox(width: 20),
                     Text(
-                      shopHistoryProvider.getOrderDetails(index, i, 4),
+                      shopHistoryProvider.orderDetails[index][4],
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                     ),
@@ -307,15 +307,14 @@ class _ShopHistoryState extends State<ShopHistory> {
                 ),
                 Row(
                   children: [
-                    if (shopHistoryProvider.getOrderDetails(index, i, 6) !=
-                        '0') ...[
+                    if (shopHistoryProvider.orderDetails[index][6] != '0') ...[
                       Text(
                         " משקל:",
                         style: TextStyle(fontSize: 20),
                       ),
                       SizedBox(width: 20),
                       Text(
-                        shopHistoryProvider.getOrderDetails(index, i, 6),
+                        shopHistoryProvider.orderDetails[index][6],
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w400),
                       ),
@@ -325,10 +324,9 @@ class _ShopHistoryState extends State<ShopHistory> {
                       ),
                     ],
                     SizedBox(width: 20),
-                    if (shopHistoryProvider.getOrderDetails(index, i, 7) !=
-                        '0') ...[
+                    if (shopHistoryProvider.orderDetails[index][7] != '0') ...[
                       Text(
-                        shopHistoryProvider.getOrderDetails(index, i, 7),
+                        shopHistoryProvider.orderDetails[index][7],
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w400),
                       ),
@@ -339,7 +337,7 @@ class _ShopHistoryState extends State<ShopHistory> {
                     ],
                   ],
                 ),
-              ],*/
+              ],
             ],
           ),
         ),
@@ -363,6 +361,7 @@ class _ShopHistoryState extends State<ShopHistory> {
           child: WillPopScope(
             onWillPop: () {
               shopHistoryProvider.retrieveOrderHistoryYet = false;
+              shopHistoryProvider.orderDetails = [];
               Navigator.pop(context);
               return null;
             },

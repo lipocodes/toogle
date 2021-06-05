@@ -216,4 +216,20 @@ class RepositoryImpl implements RepositoryAPI {
       return left(ServerException("Can't retrieve order details!"));
     }
   }
+
+  Future<Either<ServerException, DocumentSnapshot>> retreiveOrderDetails(
+      String shopID, String orderID) async {
+    List<String> response = [];
+
+    try {
+      DocumentSnapshot result = await firestore
+          .collection("orders_" + shopID)
+          .document(orderID)
+          .get();
+
+      return right(result);
+    } catch (e) {
+      return left(ServerException("Can't retrieve shop order!"));
+    }
+  }
 }
