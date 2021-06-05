@@ -1,7 +1,9 @@
 import 'package:Toogle/Core/constants/app_data.dart';
+import 'package:Toogle/Presentation/state_management/item_details_provider/item_details_provider.dart';
 import 'package:Toogle/Presentation/widgets/app_tools.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:Toogle/tools/app_tools.dart';
 import 'cart.dart';
@@ -82,7 +84,7 @@ class _ItemDetailState extends State<ItemDetail> {
 
   // Widget section //////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////
-  Widget customFloatingButton() {
+  Widget customFloatingButton(ItemDetailProvider itemDetailProvider) {
     return new Stack(
       alignment: Alignment.topLeft,
       children: <Widget>[
@@ -109,7 +111,7 @@ class _ItemDetailState extends State<ItemDetail> {
     );
   }
 
-  Widget customBottomBar() {
+  Widget customBottomBar(ItemDetailProvider itemDetailProvider) {
     return new BottomAppBar(
       color: Theme.of(context).primaryColor,
       elevation: 0.0,
@@ -123,7 +125,31 @@ class _ItemDetailState extends State<ItemDetail> {
           children: <Widget>[
             GestureDetector(
               onTap: (() {
-                this.orderNow();
+                Navigator.pushNamed(context, '/shopCart', arguments: {
+                  'itemId': itemDetailProvider.itemId,
+                  'itemName': itemDetailProvider.itemName,
+                  'itemPrice': itemDetailProvider.itemByWeightPrice.length == 0
+                      ? itemDetailProvider.itemByQuantityPrice
+                      : itemDetailProvider.itemByWeightPrice,
+                  'itemDescription': itemDetailProvider.itemDescription,
+                  'itemImage': itemDetailProvider.itemImage,
+                  'itemColor': itemDetailProvider.itemColor,
+                  'itemSize': itemDetailProvider.itemSize,
+                  'itemWeightKilos': (itemDetailProvider.selectedWeightKilos !=
+                          itemDetailProvider.selectedWeightKilos)
+                      ? itemDetailProvider.selectedWeightKilos
+                      : itemDetailProvider.selectedWeightKilos,
+                  'itemWeightGrams': (itemDetailProvider.selectedWeightGrams !=
+                          itemDetailProvider.selectedWeightGrams)
+                      ? itemDetailProvider.selectedWeightGrams
+                      : itemDetailProvider.selectedWeightGrams,
+                  'itemQuant': itemDetailProvider.itemQuantity,
+                  'itemRemarks':
+                      itemDetailProvider.controllerRemarks.text.length == 0
+                          ? "אין הערות"
+                          : itemDetailProvider.controllerRemarks.text,
+                  'itemRating': itemDetailProvider.itemRating
+                });
               }),
               child: new Container(
                 width: (screenSize.width - 20),
@@ -143,7 +169,7 @@ class _ItemDetailState extends State<ItemDetail> {
     );
   }
 
-  Widget customAppBar() {
+  Widget customAppBar(ItemDetailProvider itemDetailProvider) {
     return new AppBar(
       title: new Text(
         "פרטי המוצר",
@@ -153,7 +179,7 @@ class _ItemDetailState extends State<ItemDetail> {
     );
   }
 
-  Widget customBody() {
+  Widget customBody(ItemDetailProvider itemDetailProvider) {
     return new Stack(
       alignment: Alignment.topCenter,
       children: <Widget>[
@@ -404,18 +430,21 @@ class _ItemDetailState extends State<ItemDetail> {
   @override
   Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
-
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        key: scaffoldKey,
-        appBar: customAppBar(),
-        body: customBody(),
-        floatingActionButton: customFloatingButton(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: customBottomBar(),
-      ),
-    );
+    return Consumer<ItemDetailProvider>(
+        builder: (context, itemDetailProvider, child) {
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          key: scaffoldKey,
+          appBar: customAppBar(itemDetailProvider),
+          body: customBody(itemDetailProvider),
+          floatingActionButton: customFloatingButton(itemDetailProvider),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          bottomNavigationBar: customBottomBar(itemDetailProvider),
+        ),
+      );
+    });
   }
 
   incrementQuantity() {

@@ -7,6 +7,16 @@ abstract class ItemDetailState extends Equatable {
   List<Object> get props => [];
 }
 
-class MessageSubmitted extends ItemDetailState {}
+class IncrementQuantity extends ItemDetailState {}
 
-class MessageFailed extends ItemDetailState {}
+class DecrementQuantity extends ItemDetailState {}
+
+class ChangedDropDownWeightKilos extends ItemDetailState {}
+
+class ChangedDropDownWeightGrams extends ItemDetailState {}
+
+class RetrievePrefs extends ItemDetailState {}
+
+class OrderNow extends ItemDetailState {}
+
+class IllegalWeight extends ItemDetailState {}

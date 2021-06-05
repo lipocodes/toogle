@@ -1,3 +1,4 @@
+import 'package:Toogle/Presentation/pages/cart.dart';
 import 'package:Toogle/Presentation/pages/contact.dart';
 import 'package:Toogle/Presentation/pages/create_edit_shop.dart';
 import 'package:Toogle/Presentation/pages/delivery.dart';
@@ -56,7 +57,7 @@ class RouteGenerator {
             args['itemWeightGrams'] is String) {
           return MaterialPageRoute(
             builder: (_) => ItemDetail(
-                itemId: args["itemId"],
+                itemId: args['itemId'],
                 itemImage: args['itemImage'],
                 itemName: args['itemName'],
                 itemPrice: args['itemPrice'],
@@ -67,6 +68,38 @@ class RouteGenerator {
                 itemColor: args['itemColor'],
                 itemWeightKilos: args['itemWeightKilos'],
                 itemWeightGrams: args['itemWeightGrams']),
+          );
+        }
+        return _errorRoute();
+      case '/cart':
+        if (args["itemId"] is String &&
+            args['itemName'] is String &&
+            args['itemByWeightPrice'] is String &&
+            args['itemDescription'] is String &&
+            args['itemDescription'] is String &&
+            args['itemImage'] is String &&
+            args['itemColor'] is String &&
+            args['itemSize'] is String &&
+            args['itemWeightKilos'] &&
+            args['itemWeightGrams'] is String &&
+            args['itemQuant'] is String &&
+            args['itemRemarks'] is String &&
+            args['itemRating']) {
+          return MaterialPageRoute(
+            builder: (_) => ShopCart(
+              itemId: args['itemId'],
+              itemName: args['itemName'],
+              itemPrice: args['itemByWeightPrice'],
+              itemDescription: args['itemDescription'],
+              itemImage: args['itemImage'],
+              itemColor: args['itemColor'],
+              itemSize: args['itemSize'],
+              itemWeightKilos: args['itemWeightKilos'],
+              itemWeightGrams: args['itemWeightGrams'],
+              itemQuant: args['itemQuant'],
+              itemRemarks: args['itemRemarks'],
+              itemRating: args['itemRating'],
+            ),
           );
         }
         return _errorRoute();
