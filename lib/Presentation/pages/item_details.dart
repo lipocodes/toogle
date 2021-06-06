@@ -1,5 +1,6 @@
 import 'package:Toogle/Core/constants/app_data.dart';
 import 'package:Toogle/Presentation/state_management/item_details_provider/item_details_provider.dart';
+import 'package:Toogle/Presentation/state_management/item_details_provider/item_details_state.dart';
 import 'package:Toogle/Presentation/widgets/app_tools.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ import 'images_in_large.dart';
 //import 'package:Toogle/tools/app_data.dart';
 //import 'package:Toogle/userScreens/loginlogout.dart';
 
-class ItemDetail extends StatefulWidget {
+class ItemDetail extends StatelessWidget {
   String itemId;
   String itemName;
   String itemPrice;
@@ -25,6 +26,7 @@ class ItemDetail extends StatefulWidget {
   String itemWeightKilos;
   String itemWeightGrams;
   BuildContext context;
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
 
   ItemDetail(
       {this.itemId,
@@ -38,12 +40,6 @@ class ItemDetail extends StatefulWidget {
       this.itemColor,
       this.itemWeightKilos,
       this.itemWeightGrams});
-
-  @override
-  _ItemDetailState createState() => _ItemDetailState();
-}
-
-class _ItemDetailState extends State<ItemDetail> {
   // Widget section //////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////
   Widget customFloatingButton(ItemDetailProvider itemDetailProvider) {
@@ -52,7 +48,7 @@ class _ItemDetailState extends State<ItemDetail> {
       children: <Widget>[
         new FloatingActionButton(
           onPressed: () async {
-            itemDetailProvider.orderNow(widget.context);
+            itemDetailProvider.orderNow(this.context);
           },
           child: new Icon(Icons.shopping_cart),
         ),
@@ -84,7 +80,7 @@ class _ItemDetailState extends State<ItemDetail> {
           children: <Widget>[
             GestureDetector(
               onTap: (() {
-                itemDetailProvider.orderNow(widget.context);
+                itemDetailProvider.orderNow(this.context);
               }),
               child: new Container(
                 width: (itemDetailProvider.screenSize.width - 20),
@@ -128,7 +124,7 @@ class _ItemDetailState extends State<ItemDetail> {
           height: 300.0,
           decoration: new BoxDecoration(
               image: new DecorationImage(
-                  image: new NetworkImage(widget.itemImage),
+                  image: new NetworkImage(this.itemImage),
                   fit: BoxFit.fitHeight),
               borderRadius: new BorderRadius.only(
                 bottomRight: new Radius.circular(120.0),
@@ -290,7 +286,7 @@ class _ItemDetailState extends State<ItemDetail> {
                                 height: 140.0,
                                 width: 140.0,
                                 child:
-                                    new Image.network(widget.itemImages[index]),
+                                    new Image.network(this.itemImages[index]),
                               ),
                               new Container(
                                 margin:
@@ -369,28 +365,41 @@ class _ItemDetailState extends State<ItemDetail> {
 
   // Method section //////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-    widget.context = context;
+    this.context = context;
     return Consumer<ItemDetailProvider>(
         builder: (context, itemDetailProvider, child) {
-      itemDetailProvider.itemId = widget.itemId;
-      itemDetailProvider.itemImage = widget.itemImage;
-      itemDetailProvider.itemName = widget.itemName;
-      itemDetailProvider.itemPrice = widget.itemPrice;
-      itemDetailProvider.itemRating = widget.itemRating;
-      itemDetailProvider.itemImages = widget.itemImages;
-      itemDetailProvider.itemDescription = widget.itemDescription;
-      itemDetailProvider.itemSize = widget.itemSize;
-      itemDetailProvider.itemColor = widget.itemColor;
-      itemDetailProvider.itemWeightKilos = widget.itemWeightKilos;
-      itemDetailProvider.itemWeightGrams = widget.itemWeightGrams;
+      itemDetailProvider.initializeVars(
+          itemId,
+          itemImage,
+          itemName,
+          itemPrice,
+          itemRating,
+          itemImages,
+          itemDescription,
+          itemSize,
+          itemColor,
+          itemWeightKilos,
+          itemWeightGrams);
+
+      if (itemDetailProvider.state == IncrementQuantity()) {
+        print("IncrementQuantity() successful!");
+      } else if (itemDetailProvider.state == DecrementQuantity()) {
+        print("DecrementQuantity() successful!");
+      } else if (itemDetailProvider.state == IllegalWeight()) {
+        showSnackBar("משקל לא תקין", this.scaffoldKey);
+        print("IllegalWeight() successful!");
+      } else if (itemDetailProvider.state == ChangedDropDownWeightKilos()) {
+        print("ChangedDropDownWeightKilos() successful!");
+      } else if (itemDetailProvider.state == ChangedDropDownWeightGrams()) {
+        print("changedDropDownWeightGrams() successful!");
+      } else if (itemDetailProvider.state == RetrievePrefs()) {
+        print("RetrievePrefs() successful!");
+      } else if (itemDetailProvider.state == OrderNow()) {
+        print("OrderNow() successful!");
+      }
 
       return Directionality(
         textDirection: TextDirection.rtl,

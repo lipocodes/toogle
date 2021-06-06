@@ -160,6 +160,32 @@ class ItemDetailProvider extends ChangeNotifier {
           : this.controllerRemarks.text,
       'itemRating': this.itemRating
     });
+    changeState(RetrievePrefs());
+  }
+
+  initializeVars(
+      String itemId,
+      String itemImage,
+      String itemName,
+      String itemPrice,
+      String itemRating,
+      List<dynamic> itemImages,
+      String itemDescription,
+      String itemSize,
+      String itemColor,
+      String itemWeightKilos,
+      String itemWeightGrams) {
+    this.itemId = itemId;
+    this.itemImage = itemImage;
+    this.itemName = itemName;
+    this.itemPrice = itemPrice;
+    this.itemRating = itemRating;
+    this.itemImages = itemImages;
+    this.itemDescription = itemDescription;
+    this.itemSize = itemSize;
+    this.itemColor = itemColor;
+    this.itemWeightKilos = itemWeightKilos;
+    this.itemWeightGrams = itemWeightGrams;
   }
 
 //////End methods
