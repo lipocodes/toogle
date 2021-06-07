@@ -74,13 +74,13 @@ class RouteGenerator {
       case '/shopCart':
         if (args['itemId'] is String &&
             args['itemName'] is String &&
-            //args['itemByWeightPrice']  is String
+            args['itemPrice'] is String &&
             args['itemDescription'] is String &&
             args['itemImage'] is String &&
             args['itemColor'] is String &&
             args['itemSize'] is String &&
             args['itemWeightKilos'] is String &&
-            //   args['itemWeightGrams'] is String
+            args['itemWeightGrams'] is String &&
             args['itemQuant'] is String &&
             args['itemRemarks'] is String &&
             args['itemRating'] is String) {
@@ -88,13 +88,13 @@ class RouteGenerator {
             builder: (_) => ShopCart(
               itemId: args['itemId'],
               itemName: args['itemName'],
-              //itemPrice: args['itemByWeightPrice'],
+              itemPrice: args['itemPrice'],
               itemDescription: args['itemDescription'],
               itemImage: args['itemImage'],
               itemColor: args['itemColor'],
               itemSize: args['itemSize'],
               itemWeightKilos: args['itemWeightKilos'],
-              // itemWeightGrams: args['itemWeightGrams'],
+              itemWeightGrams: args['itemWeightGrams'],
               itemQuant: args['itemQuant'],
               itemRemarks: args['itemRemarks'],
               itemRating: args['itemRating'],

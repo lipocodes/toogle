@@ -1,8 +1,11 @@
 //import 'package:Toogle/tools/app_data.dart';
 import 'package:Toogle/Core/constants/app_data.dart';
+import 'package:Toogle/Presentation/pages/create_edit_shop.dart';
+import 'package:Toogle/Presentation/state_management/cart_provider/cart_provider.dart';
 import 'package:Toogle/Presentation/widgets/app_tools.dart';
 import 'package:Toogle/tools/firebase_methods.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:Toogle/tools/app_tools.dart';
 import 'package:Toogle/Core/app_localizations.dart';
@@ -71,8 +74,8 @@ class _ShopCartState extends State<ShopCart> {
   final controllerLocation = TextEditingController();
   final controllerPhone = TextEditingController();
 
-  //Widget section ////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
+  //Widget section /////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////
   Widget customAppBar() {
     return AppBar(
       title: new Text(
@@ -82,7 +85,7 @@ class _ShopCartState extends State<ShopCart> {
     );
   }
 
-  Widget customBody() {
+  Widget customBody(CartProvider cartProvider) {
     return new Column(
       children: [
         new Expanded(
@@ -228,27 +231,8 @@ class _ShopCartState extends State<ShopCart> {
     );
   }
 
-  //Method section ///////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    retrieveCartContents();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: new Scaffold(
-        key: scaffoldKey,
-        appBar: customAppBar(),
-        body: customBody(),
-      ),
-    );
-  }
+///// Method section ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //pull what is in the shopping cart (preference) into a list
   void retrieveCartContents() async {
@@ -572,5 +556,27 @@ class _ShopCartState extends State<ShopCart> {
     if (this.cartContents.length == 0) return;
 
     _showMaterialDialog();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    retrieveCartContents();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<CartProvider>(builder: (context, cartProvider, child) {
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: new Scaffold(
+          key: scaffoldKey,
+          appBar: customAppBar(),
+          body: customBody(cartProvider),
+        ),
+      );
+    });
   }
 }

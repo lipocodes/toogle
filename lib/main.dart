@@ -3,6 +3,7 @@ import 'package:Toogle/Core/route_generator.dart';
 import 'package:Toogle/Presentation/pages/contact.dart';
 import 'package:Toogle/Presentation/pages/delivery.dart';
 import 'package:Toogle/Presentation/pages/myHomePage.dart';
+import 'package:Toogle/Presentation/state_management/cart_provider/cart_provider.dart';
 import 'package:Toogle/Presentation/state_management/contact_provider/contact_provider.dart';
 import 'package:Toogle/Presentation/state_management/createEditShop_provider/create_edit_shop_provider.dart';
 import 'package:Toogle/Presentation/state_management/delivery_provider/delivery_provider.dart';
@@ -42,6 +43,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider.value(
           value: ItemDetailProvider(),
+        ),
+        ChangeNotifierProvider.value(
+          value: CartProvider(),
         ),
       ],
       child: MaterialApp(

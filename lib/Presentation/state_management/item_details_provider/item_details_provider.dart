@@ -146,8 +146,8 @@ class ItemDetailProvider extends ChangeNotifier {
           : this.itemByWeightPrice,
       'itemDescription': this.itemDescription,
       'itemImage': this.itemImage,
-      //'itemColor': this.itemColor,
-      //'itemSize': this.itemSize,
+      'itemColor': this.itemColor != null ? this.itemColor : "",
+      'itemSize': this.itemSize != null ? this.itemSize : "",
       'itemWeightKilos': (this.selectedWeightKilos != this.selectedWeightKilos)
           ? this.selectedWeightKilos
           : this.selectedWeightKilos,
